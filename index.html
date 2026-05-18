@@ -451,7 +451,7 @@ const DEFAULT_ROOMS=[
   {id:"cuarto-servicio",  name:"Cuarto de Servicio",   order:3},
   {id:"lavadero",         name:"Lavadero",             order:4},
   {id:"hab-martin",       name:"Habitación Martín",    order:5},
-  {id:"hab-anita",        name:"Habitación Anita",     order:6},
+  {id:"hab-anita",        name:"Oficina Papá",     order:6},
   {id:"hab-principal",    name:"Habitación Principal", order:7},
   {id:"vestidor",         name:"Vestidor",             order:8},
   {id:"placard-toilette", name:"Placard / Toilette",   order:9},
@@ -550,7 +550,7 @@ function loadPhotos(roomId){
   const {collection,query,orderBy,onSnapshot}=_fb;
   if(unsub) unsub();
   document.getElementById("grid-inner").innerHTML=Array(8).fill('<div class="skeleton"></div>').join("");
-  unsub=onSnapshot(query(collection(db,"photos"),orderBy("uploadedAt","desc")),snap=>{
+  unsub=onSnapshot(query(collection(db,"photos"),orderBy("uploadedAt","asc")),snap=>{
     currentPhotos=snap.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.roomId===roomId);
     renderGrid();
     const el=document.getElementById(`rc-${roomId}`);
