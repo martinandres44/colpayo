@@ -14,6 +14,8 @@
   --martin:#DBEAFE;--martin-t:#1E40AF;
   --anita:#FCE7F3;--anita-t:#9D174D;
   --ambos:#E5E7EB;--ambos-t:#374151;
+  --venta:#D1FAE5;--venta-t:#065F46;
+  --donacion:#FEF3C7;--donacion-t:#92400E;
   --r:8px;--sw:224px;
 }
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
@@ -62,6 +64,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .pb.active-m{background:var(--martin);color:var(--martin-t);border-color:var(--martin-t)}
 .pb.active-a{background:var(--anita);color:var(--anita-t);border-color:var(--anita-t)}
 .pb.active-all{background:var(--acc-l);color:var(--acc);border-color:var(--acc)}
+.pb.active-v{background:var(--venta);color:var(--venta-t);border-color:var(--venta-t)}
+.pb.active-d{background:var(--donacion);color:var(--donacion-t);border-color:var(--donacion-t)}
 .pb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 #inv-room-filter{width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);outline:none}
 #inv-room-filter:focus{border-color:var(--acc)}
@@ -140,6 +144,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .badge-martin{background:var(--martin);color:var(--martin-t)}
 .badge-anita{background:var(--anita);color:var(--anita-t)}
 .badge-ambos{background:var(--ambos);color:var(--ambos-t)}
+.badge-venta{background:var(--venta);color:var(--venta-t)}
+.badge-donacion{background:var(--donacion);color:var(--donacion-t)}
 .badge-status{background:var(--bg2);color:var(--t2)}
 .item-notes{font-size:12px;color:var(--t2);margin-top:5px;line-height:1.5}
 .item-del{padding:6px 8px;background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--t3);font-size:13px;transition:all .12s;flex-shrink:0}
@@ -165,6 +171,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .ps-opt.sel-m{background:var(--martin);color:var(--martin-t);border-color:var(--martin-t);font-weight:500}
 .ps-opt.sel-a{background:var(--anita);color:var(--anita-t);border-color:var(--anita-t);font-weight:500}
 .ps-opt.sel-b{background:var(--ambos);color:var(--ambos-t);border-color:var(--ambos-t);font-weight:500}
+.ps-opt.sel-v{background:var(--venta);color:var(--venta-t);border-color:var(--venta-t);font-weight:500}
+.ps-opt.sel-d{background:var(--donacion);color:var(--donacion-t);border-color:var(--donacion-t);font-weight:500}
 .modal-actions{display:flex;gap:8px;margin-top:16px}
 .btn-primary{flex:1;padding:10px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer}
 .btn-primary:hover{opacity:.88}
@@ -294,6 +302,12 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
         <button class="pb" id="pb-anita" onclick="setPersonFilter('anita')">
           <span class="pb-dot" style="background:var(--anita-t)"></span>Anita
         </button>
+        <button class="pb" id="pb-venta" onclick="setPersonFilter('venta')">
+          <span class="pb-dot" style="background:var(--venta-t)"></span>Venta
+        </button>
+        <button class="pb" id="pb-donacion" onclick="setPersonFilter('donacion')">
+          <span class="pb-dot" style="background:var(--donacion-t)"></span>Donación
+        </button>
       </div>
       <div>
         <div class="sb-filter-label">Ambiente</div>
@@ -362,7 +376,8 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
       <div class="person-select">
         <button class="ps-opt" id="ps-martin" onclick="selectPerson('martin')">Martín</button>
         <button class="ps-opt" id="ps-anita" onclick="selectPerson('anita')">Anita</button>
-        <button class="ps-opt" id="ps-ambos" onclick="selectPerson('ambos')">Ambos</button>
+        <button class="ps-opt" id="ps-venta" onclick="selectPerson('venta')">Venta</button>
+        <button class="ps-opt" id="ps-donacion" onclick="selectPerson('donacion')">Donación</button>
       </div>
     </div>
     <div class="form-field">
@@ -702,7 +717,7 @@ function listenInventory(){
 
 function renderInventory(){
   let items=[...inventoryAll];
-  if(invPersonFilter!=="all") items=items.filter(i=>i.assignedTo===invPersonFilter||i.assignedTo==="ambos");
+  if(invPersonFilter!=="all") items=items.filter(i=>i.assignedTo===invPersonFilter);
   if(invRoomFilter!=="all")   items=items.filter(i=>i.room===invRoomFilter);
   const el=document.getElementById("inv-list");
   const n=items.length;
@@ -719,8 +734,8 @@ function renderInventory(){
   }
   el.innerHTML=items.map(item=>{
     const room=rooms.find(r=>r.id===item.room);
-    const pC=item.assignedTo==="martin"?"badge-martin":item.assignedTo==="anita"?"badge-anita":"badge-ambos";
-    const pL=item.assignedTo==="martin"?"Martín":item.assignedTo==="anita"?"Anita":"Ambos";
+    const pMap={martin:["badge-martin","Martín"],anita:["badge-anita","Anita"],venta:["badge-venta","Venta"],donacion:["badge-donacion","Donación"]};
+    const [pC,pL]=pMap[item.assignedTo]||["badge-ambos",item.assignedTo||""];
     const sL=STATUS[item.status]||"";
     return `<div class="item-card" onclick="openItemModal('${item.id}')">
       <div class="item-card-body">
@@ -739,9 +754,11 @@ function renderInventory(){
 
 window.setPersonFilter=function(p){
   invPersonFilter=p;
-  document.getElementById("pb-all").className   ="pb"+(p==="all"   ?" active-all":"");
-  document.getElementById("pb-martin").className="pb"+(p==="martin"?" active-m":"");
-  document.getElementById("pb-anita").className ="pb"+(p==="anita" ?" active-a":"");
+  document.getElementById("pb-all").className    ="pb"+(p==="all"     ?" active-all":"");
+  document.getElementById("pb-martin").className ="pb"+(p==="martin"  ?" active-m":"");
+  document.getElementById("pb-anita").className  ="pb"+(p==="anita"   ?" active-a":"");
+  document.getElementById("pb-venta").className  ="pb"+(p==="venta"   ?" active-v":"");
+  document.getElementById("pb-donacion").className="pb"+(p==="donacion"?" active-d":"");
   renderInventory();
   closeSidebar();
 };
@@ -774,8 +791,8 @@ window.closeItemModal=()=>{
 };
 window.selectPerson=function(p){
   selectedPerson=p;
-  const cl={martin:"sel-m",anita:"sel-a",ambos:"sel-b"};
-  ["martin","anita","ambos"].forEach(k=>{
+  const cl={martin:"sel-m",anita:"sel-a",venta:"sel-v",donacion:"sel-d"};
+  ["martin","anita","venta","donacion"].forEach(k=>{
     document.getElementById("ps-"+k).className="ps-opt"+(k===p?" "+cl[k]:"");
   });
 };
