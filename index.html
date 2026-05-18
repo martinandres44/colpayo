@@ -16,6 +16,7 @@
   --ambos:#E5E7EB;--ambos-t:#374151;
   --venta:#D1FAE5;--venta-t:#065F46;
   --donacion:#FEF3C7;--donacion-t:#92400E;
+  --confirmar:#F3E8FF;--confirmar-t:#6B21A8;
   --r:8px;--sw:224px;
 }
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
@@ -66,6 +67,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .pb.active-all{background:var(--acc-l);color:var(--acc);border-color:var(--acc)}
 .pb.active-v{background:var(--venta);color:var(--venta-t);border-color:var(--venta-t)}
 .pb.active-d{background:var(--donacion);color:var(--donacion-t);border-color:var(--donacion-t)}
+.pb.active-c{background:var(--confirmar);color:var(--confirmar-t);border-color:var(--confirmar-t)}
 .pb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 #inv-room-filter{width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);outline:none}
 #inv-room-filter:focus{border-color:var(--acc)}
@@ -146,6 +148,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .badge-ambos{background:var(--ambos);color:var(--ambos-t)}
 .badge-venta{background:var(--venta);color:var(--venta-t)}
 .badge-donacion{background:var(--donacion);color:var(--donacion-t)}
+.badge-confirmar{background:var(--confirmar);color:var(--confirmar-t)}
 .badge-status{background:var(--bg2);color:var(--t2)}
 .item-notes{font-size:12px;color:var(--t2);margin-top:5px;line-height:1.5}
 .item-del{padding:6px 8px;background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--t3);font-size:13px;transition:all .12s;flex-shrink:0}
@@ -173,6 +176,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .ps-opt.sel-b{background:var(--ambos);color:var(--ambos-t);border-color:var(--ambos-t);font-weight:500}
 .ps-opt.sel-v{background:var(--venta);color:var(--venta-t);border-color:var(--venta-t);font-weight:500}
 .ps-opt.sel-d{background:var(--donacion);color:var(--donacion-t);border-color:var(--donacion-t);font-weight:500}
+.ps-opt.sel-c{background:var(--confirmar);color:var(--confirmar-t);border-color:var(--confirmar-t);font-weight:500}
 .modal-actions{display:flex;gap:8px;margin-top:16px}
 .btn-primary{flex:1;padding:10px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer}
 .btn-primary:hover{opacity:.88}
@@ -302,14 +306,14 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
         <button class="pb" id="pb-anita" onclick="setPersonFilter('anita')">
           <span class="pb-dot" style="background:var(--anita-t)"></span>Anita
         </button>
-          <button class="pb" id="pb-donacion" onclick="setPersonFilter('A confirmar')">
-          <span class="pb-dot" style="background:var(--donacion-t)"></span>A confirmar
-        </button>
         <button class="pb" id="pb-venta" onclick="setPersonFilter('venta')">
           <span class="pb-dot" style="background:var(--venta-t)"></span>Venta
         </button>
         <button class="pb" id="pb-donacion" onclick="setPersonFilter('donacion')">
           <span class="pb-dot" style="background:var(--donacion-t)"></span>Donación
+        </button>
+        <button class="pb" id="pb-confirmar" onclick="setPersonFilter('confirmar')">
+          <span class="pb-dot" style="background:var(--confirmar-t)"></span>A confirmar
         </button>
       </div>
       <div>
@@ -381,6 +385,7 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
         <button class="ps-opt" id="ps-anita" onclick="selectPerson('anita')">Anita</button>
         <button class="ps-opt" id="ps-venta" onclick="selectPerson('venta')">Venta</button>
         <button class="ps-opt" id="ps-donacion" onclick="selectPerson('donacion')">Donación</button>
+        <button class="ps-opt" id="ps-confirmar" onclick="selectPerson('confirmar')">A confirmar</button>
       </div>
     </div>
     <div class="form-field">
@@ -737,7 +742,7 @@ function renderInventory(){
   }
   el.innerHTML=items.map(item=>{
     const room=rooms.find(r=>r.id===item.room);
-    const pMap={martin:["badge-martin","Martín"],anita:["badge-anita","Anita"],venta:["badge-venta","Venta"],donacion:["badge-donacion","Donación"]};
+    const pMap={martin:["badge-martin","Martín"],anita:["badge-anita","Anita"],venta:["badge-venta","Venta"],donacion:["badge-donacion","Donación"],confirmar:["badge-confirmar","A confirmar"]};
     const [pC,pL]=pMap[item.assignedTo]||["badge-ambos",item.assignedTo||""];
     const sL=STATUS[item.status]||"";
     return `<div class="item-card" onclick="openItemModal('${item.id}')">
@@ -762,6 +767,7 @@ window.setPersonFilter=function(p){
   document.getElementById("pb-anita").className  ="pb"+(p==="anita"   ?" active-a":"");
   document.getElementById("pb-venta").className  ="pb"+(p==="venta"   ?" active-v":"");
   document.getElementById("pb-donacion").className="pb"+(p==="donacion"?" active-d":"");
+  document.getElementById("pb-confirmar").className="pb"+(p==="confirmar"?" active-c":"");
   renderInventory();
   closeSidebar();
 };
@@ -794,8 +800,8 @@ window.closeItemModal=()=>{
 };
 window.selectPerson=function(p){
   selectedPerson=p;
-  const cl={martin:"sel-m",anita:"sel-a",venta:"sel-v",donacion:"sel-d"};
-  ["martin","anita","venta","donacion"].forEach(k=>{
+  const cl={martin:"sel-m",anita:"sel-a",venta:"sel-v",donacion:"sel-d",confirmar:"sel-c"};
+  ["martin","anita","venta","donacion","confirmar"].forEach(k=>{
     document.getElementById("ps-"+k).className="ps-opt"+(k===p?" "+cl[k]:"");
   });
 };
