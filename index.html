@@ -16,10 +16,17 @@
   --ambos:#E5E7EB;--ambos-t:#374151;
   --r:8px;--sw:224px;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100dvh;display:flex;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── Mobile overlay ── */
+#mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:490}
 
 /* ── Sidebar ── */
-#sidebar{width:var(--sw);flex-shrink:0;background:var(--wh);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100%}
+#sidebar{
+  width:var(--sw);flex-shrink:0;background:var(--wh);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;height:100%;
+}
 #sb-head{padding:18px 16px 12px;border-bottom:1px solid var(--border)}
 #sb-title{font-family:'Lora',serif;font-size:16px;font-weight:500}
 #sb-sub{font-size:10.5px;color:var(--t3);margin-top:2px;text-transform:uppercase;letter-spacing:.08em}
@@ -28,11 +35,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 #sb-tabs{display:flex;gap:4px;padding:10px 12px;border-bottom:1px solid var(--border)}
 .tab{flex:1;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;cursor:pointer;background:none;font-family:'DM Sans',sans-serif;color:var(--t2);text-align:center;transition:all .12s}
 .tab.active{background:var(--acc);color:#fff;border-color:var(--acc)}
-.tab:hover:not(.active){background:var(--bg);border-color:var(--t3)}
+.tab:hover:not(.active){background:var(--bg)}
 
 /* Room list */
 #sb-rooms{flex:1;overflow-y:auto;padding:6px 0;display:flex;flex-direction:column}
-.room-item{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;cursor:pointer;font-size:13.5px;color:var(--t2);border-left:2px solid transparent;transition:all .12s;user-select:none}
+.room-item{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;cursor:pointer;font-size:13.5px;color:var(--t2);border-left:2px solid transparent;transition:all .12s;user-select:none}
 .room-item:hover{background:var(--bg);color:var(--text)}
 .room-item.active{background:var(--acc-l);color:var(--acc);border-left-color:var(--acc);font-weight:500}
 .rc{font-size:11px;background:var(--bg2);border-radius:10px;padding:1px 7px;color:var(--t3)}
@@ -46,13 +53,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .frow{display:flex;gap:6px}
 .bsm{flex:1;padding:6px;font-size:12px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;font-family:'DM Sans',sans-serif;background:var(--wh);color:var(--t2);transition:all .12s}
 .bsm.p{background:var(--acc);color:#fff;border-color:var(--acc)}.bsm.p:hover{opacity:.88}
-.bsm:hover{border-color:var(--t3)}
 
 /* Inventory sidebar filters */
-#sb-inv{flex:1;overflow-y:auto;padding:12px;display:none;flex-direction:column;gap:10px}
-.sb-filter-label{font-size:10.5px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
-.person-btns{display:flex;flex-direction:column;gap:4px}
-.pb{padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;cursor:pointer;background:none;font-family:'DM Sans',sans-serif;color:var(--t2);text-align:left;transition:all .12s;display:flex;align-items:center;gap:7px}
+#sb-inv{flex:1;overflow-y:auto;padding:12px;display:none;flex-direction:column;gap:12px}
+.sb-filter-label{font-size:10.5px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.pb{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;cursor:pointer;background:none;font-family:'DM Sans',sans-serif;color:var(--t2);text-align:left;transition:all .12s;display:flex;align-items:center;gap:7px;margin-bottom:4px}
 .pb:hover{background:var(--bg)}
 .pb.active-m{background:var(--martin);color:var(--martin-t);border-color:var(--martin-t)}
 .pb.active-a{background:var(--anita);color:var(--anita-t);border-color:var(--anita-t)}
@@ -61,27 +66,57 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 #inv-room-filter{width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);outline:none}
 #inv-room-filter:focus{border-color:var(--acc)}
 
+/* ── App body (sidebar + main) ── */
+#app-body{flex:1;display:flex;overflow:hidden;min-height:0}
+
+/* ── Mobile top bar ── */
+#mob-bar{
+  display:none;
+  background:var(--wh);
+  border-bottom:1px solid var(--border);
+  padding:0;
+  flex-shrink:0;
+  flex-direction:column;
+}
+#mob-bar-top{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+}
+#mob-menu-btn{
+  background:none;border:1px solid var(--border);border-radius:var(--r);
+  padding:6px 11px;cursor:pointer;font-size:17px;color:var(--t2);flex-shrink:0;
+}
+#mob-room-name{font-family:'Lora',serif;font-size:15px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mob-action-btn{
+  padding:7px 13px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);
+  font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap;flex-shrink:0;
+}
+#mob-action-btn:disabled{opacity:.5;cursor:not-allowed}
+/* Mobile view tabs */
+#mob-tabs{display:flex;border-top:1px solid var(--border)}
+.mob-tab{flex:1;padding:8px;text-align:center;font-size:13px;cursor:pointer;color:var(--t2);border-bottom:2px solid transparent;transition:all .12s;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif}
+.mob-tab.active{color:var(--acc);border-bottom-color:var(--acc);font-weight:500}
+
 /* ── Main ── */
-#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 
 /* Photos view */
 #photos-view{flex:1;display:flex;flex-direction:column;overflow:hidden}
-#ph-head{padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--wh);flex-shrink:0}
-#room-title{font-family:'Lora',serif;font-size:19px;font-weight:500}
+#ph-head{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--wh);flex-shrink:0}
+#room-title{font-family:'Lora',serif;font-size:18px;font-weight:500}
 #room-meta{font-size:11.5px;color:var(--t3);margin-top:2px}
-#upload-btn{padding:8px 16px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:13.5px;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;transition:opacity .12s}
+#upload-btn{padding:8px 16px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .12s;white-space:nowrap}
 #upload-btn:hover{opacity:.88}
 #upload-btn:disabled{opacity:.45;cursor:not-allowed}
-#photo-grid{flex:1;overflow-y:auto;padding:14px}
-#grid-inner{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px}
+#photo-grid{flex:1;overflow-y:auto;padding:14px;-webkit-overflow-scrolling:touch}
+#grid-inner{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
 .photo-card{position:relative;aspect-ratio:4/3;border-radius:var(--r);overflow:hidden;cursor:pointer;background:var(--bg2)}
 .photo-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .22s}
 .photo-card:hover img{transform:scale(1.04)}
 .pco{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .15s}
-.photo-card:hover .pco{background:rgba(0,0,0,0.15)}
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:320px;color:var(--t3);gap:10px;border:1.5px dashed var(--border);border-radius:12px;cursor:pointer;transition:all .15s;grid-column:1/-1}
+.photo-card:hover .pco{background:rgba(0,0,0,.15)}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;color:var(--t3);gap:10px;border:1.5px dashed var(--border);border-radius:12px;cursor:pointer;transition:all .15s;grid-column:1/-1;padding:20px}
 .empty-state:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-l)}
-.empty-state p{font-size:13.5px}
+.empty-state p{font-size:13.5px;text-align:center}
 .upload-card{aspect-ratio:4/3;border:1.5px dashed var(--border);border-radius:var(--r);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t3);transition:all .15s}
 .upload-card:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-l)}
 .skeleton{background:linear-gradient(90deg,var(--bg2) 25%,var(--border) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.3s infinite;border-radius:var(--r);aspect-ratio:4/3}
@@ -89,49 +124,51 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 
 /* ── Inventory view ── */
 #inventory-view{flex:1;display:none;flex-direction:column;overflow:hidden}
-#inv-head{padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--wh);flex-shrink:0}
-#inv-title{font-family:'Lora',serif;font-size:19px;font-weight:500}
+#inv-head{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--wh);flex-shrink:0}
+#inv-title{font-family:'Lora',serif;font-size:18px;font-weight:500}
 #inv-meta{font-size:11.5px;color:var(--t3);margin-top:2px}
-#add-item-btn{padding:8px 16px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:13.5px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .12s}
+#add-item-btn{padding:8px 16px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .12s}
 #add-item-btn:hover{opacity:.88}
-#inv-list{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
-.inv-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--t3);gap:8px;font-size:13.5px;min-height:280px}
-.item-card{background:var(--wh);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;cursor:pointer;transition:all .12s;display:flex;align-items:flex-start;gap:12px}
+#inv-list{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch}
+.inv-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--t3);gap:8px;font-size:13.5px;min-height:260px;text-align:center}
+.item-card{background:var(--wh);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;cursor:pointer;transition:all .12s;display:flex;align-items:flex-start;gap:10px}
 .item-card:hover{border-color:var(--acc);box-shadow:0 1px 8px rgba(139,111,71,.08)}
 .item-card-body{flex:1;min-width:0}
-.item-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px}
-.item-meta{font-size:12px;color:var(--t2);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:11.5px;font-weight:500}
+.item-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
+.item-meta{font-size:12px;color:var(--t2);display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:11.5px;font-weight:500}
 .badge-martin{background:var(--martin);color:var(--martin-t)}
 .badge-anita{background:var(--anita);color:var(--anita-t)}
 .badge-ambos{background:var(--ambos);color:var(--ambos-t)}
 .badge-status{background:var(--bg2);color:var(--t2)}
 .item-notes{font-size:12px;color:var(--t2);margin-top:5px;line-height:1.5}
-.item-del{padding:6px 8px;background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--t3);font-size:13px;transition:all .12s;flex-shrink:0;display:flex;align-items:center}
+.item-del{padding:6px 8px;background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--t3);font-size:13px;transition:all .12s;flex-shrink:0}
 .item-del:hover{background:#fee2e2;border-color:#fca5a5;color:#b91c1c}
-.inv-group-label{font-size:11px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;padding:4px 2px}
 
 /* ── Item modal ── */
-#item-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;align-items:center;justify-content:center}
+#item-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;align-items:flex-end;justify-content:center}
 #item-modal.open{display:flex}
-#item-box{background:var(--wh);border-radius:12px;padding:26px;width:440px;max-width:94vw;max-height:90vh;overflow-y:auto}
-#item-box h3{font-family:'Lora',serif;font-size:18px;font-weight:500;margin-bottom:18px}
-.form-field{margin-bottom:14px}
-.form-label{display:block;font-size:12px;font-weight:500;color:var(--t2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
-.form-input,.form-select,.form-textarea{width:100%;padding:8px 10px;font-size:13.5px;border:1px solid var(--border);border-radius:var(--r);font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);outline:none;transition:border .12s}
+#item-box{background:var(--wh);border-radius:14px 14px 0 0;padding:22px 22px 30px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto}
+@media(min-width:641px){
+  #item-modal{align-items:center}
+  #item-box{border-radius:14px;padding:26px;max-height:88vh}
+}
+.modal-drag{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
+#item-box h3{font-family:'Lora',serif;font-size:18px;font-weight:500;margin-bottom:16px}
+.form-field{margin-bottom:13px}
+.form-label{display:block;font-size:11.5px;font-weight:500;color:var(--t2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.form-input,.form-select,.form-textarea{width:100%;padding:9px 11px;font-size:14px;border:1px solid var(--border);border-radius:var(--r);font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);outline:none;transition:border .12s;-webkit-appearance:none}
 .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--acc)}
-.form-textarea{resize:vertical;min-height:70px}
+.form-textarea{resize:none;height:72px}
 .person-select{display:flex;gap:8px}
-.ps-opt{flex:1;padding:8px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;font-size:13px;text-align:center;transition:all .12s;font-family:'DM Sans',sans-serif;background:none;color:var(--t2)}
-.ps-opt:hover{border-color:var(--t3)}
+.ps-opt{flex:1;padding:9px 6px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;font-size:13.5px;text-align:center;transition:all .12s;font-family:'DM Sans',sans-serif;background:none;color:var(--t2)}
 .ps-opt.sel-m{background:var(--martin);color:var(--martin-t);border-color:var(--martin-t);font-weight:500}
 .ps-opt.sel-a{background:var(--anita);color:var(--anita-t);border-color:var(--anita-t);font-weight:500}
 .ps-opt.sel-b{background:var(--ambos);color:var(--ambos-t);border-color:var(--ambos-t);font-weight:500}
-.modal-actions{display:flex;gap:8px;margin-top:18px}
-.btn-primary{flex:1;padding:9px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .12s}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.btn-primary{flex:1;padding:10px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer}
 .btn-primary:hover{opacity:.88}
-.btn-cancel{padding:9px 16px;background:none;border:1px solid var(--border);border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--t2);transition:all .12s}
-.btn-cancel:hover{border-color:var(--t3)}
+.btn-cancel{padding:10px 16px;background:none;border:1px solid var(--border);border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--t2)}
 
 /* ── Progress bar ── */
 #progress-bar{display:none;position:fixed;top:0;left:0;right:0;height:3px;background:var(--acc-l);z-index:999}
@@ -142,83 +179,112 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 #lightbox.open{display:flex}
 #lb-img{max-width:min(92vw,1200px);max-height:85vh;object-fit:contain;border-radius:6px}
 #lb-close,#lb-prev,#lb-next{position:fixed;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;cursor:pointer;font-size:20px;line-height:1;transition:background .12s}
-#lb-close{top:14px;right:16px;padding:6px 12px}
-#lb-prev{left:14px;top:50%;transform:translateY(-50%);padding:12px 14px}
-#lb-next{right:14px;top:50%;transform:translateY(-50%);padding:12px 14px}
+#lb-close{top:14px;right:14px;padding:6px 12px}
+#lb-prev{left:10px;top:50%;transform:translateY(-50%);padding:12px 14px}
+#lb-next{right:10px;top:50%;transform:translateY(-50%);padding:12px 14px}
 #lb-prev:hover,#lb-next:hover,#lb-close:hover{background:rgba(255,255,255,.22)}
 #lb-counter{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.6);font-size:12px;background:rgba(0,0,0,.4);padding:4px 14px;border-radius:20px}
-#lb-label{position:fixed;top:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.8);font-family:'Lora',serif;font-size:14px;font-style:italic}
+#lb-label{position:fixed;top:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.8);font-family:'Lora',serif;font-size:14px;font-style:italic;white-space:nowrap}
 
 /* ── Toast ── */
-#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:#1C1917;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;transition:transform .3s;z-index:2000;white-space:nowrap}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:#1C1917;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;transition:transform .3s;z-index:2000;white-space:nowrap;max-width:90vw;text-align:center}
 #toast.show{transform:translateX(-50%) translateY(0)}
 
 /* ── Config overlay ── */
-#config-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3000;align-items:center;justify-content:center}
+#config-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3000;align-items:flex-end;justify-content:center}
 #config-overlay.open{display:flex}
-#config-box{background:var(--wh);border-radius:14px;padding:28px;max-width:520px;width:92%;max-height:90vh;overflow-y:auto}
-#config-box h2{font-family:'Lora',serif;font-size:21px;margin-bottom:6px}
-.cfg-section{margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+#config-box{background:var(--wh);border-radius:14px 14px 0 0;padding:24px 22px 36px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto}
+@media(min-width:641px){
+  #config-overlay{align-items:center}
+  #config-box{border-radius:14px;padding:28px;max-height:88vh}
+}
+#config-box h2{font-family:'Lora',serif;font-size:20px;margin-bottom:6px}
+.cfg-section{margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border)}
 .cfg-section:last-of-type{border-bottom:none;margin-bottom:0}
 .cfg-label{font-size:12px;font-weight:500;color:var(--t2);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.05em}
-.cfg-input{width:100%;padding:9px 11px;font-family:monospace;font-size:12px;border:1px solid var(--border);border-radius:var(--r);outline:none;background:var(--bg);color:var(--text)}
+.cfg-input{width:100%;padding:9px 11px;font-family:monospace;font-size:12px;border:1px solid var(--border);border-radius:var(--r);outline:none;background:var(--bg);color:var(--text);-webkit-appearance:none}
 .cfg-input:focus{border-color:var(--acc)}
-textarea.cfg-input{resize:vertical;min-height:150px;margin-bottom:0}
+textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
 .cfg-hint{font-size:11.5px;color:var(--t3);margin-top:4px;line-height:1.5}
 .cfg-hint code{background:var(--bg2);padding:1px 4px;border-radius:3px;font-size:11px}
-#config-save{width:100%;padding:11px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:16px;transition:opacity .12s}
+#config-save{width:100%;padding:11px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:14px}
 #config-save:hover{opacity:.88}
 #config-err{font-size:12px;color:#b91c1c;margin-top:8px;display:none;padding:8px 10px;background:#fee2e2;border-radius:6px}
 
-/* ── Mobile ── */
-@media(max-width:640px){
-  #sidebar{display:none}
-  #mob-bar{display:flex}
+/* ── Desktop layout ── */
+@media(min-width:641px){
+  body{flex-direction:row}
+  #mob-bar{display:none!important}
+  #ph-head,#inv-head{display:flex!important}
+  #app-body{flex:1}
 }
-#mob-bar{display:none;padding:10px 14px;background:var(--wh);border-bottom:1px solid var(--border);align-items:center;gap:10px;flex-shrink:0}
-#mob-menu-btn{background:none;border:1px solid var(--border);border-radius:var(--r);padding:5px 10px;cursor:pointer;font-size:15px}
+@media(max-width:640px){
+  #mob-bar{display:flex}
+  #sidebar{
+    position:fixed;left:calc(-1 * var(--sw) - 10px);top:0;height:100%;
+    z-index:500;transition:left .25s ease;
+    box-shadow:none;
+  }
+  #sidebar.open{left:0;box-shadow:4px 0 24px rgba(0,0,0,.18)}
+  #mob-overlay{display:none}
+  #mob-overlay.show{display:block}
+  #ph-head,#inv-head{display:none}
+  #app-body{flex:1;min-height:0}
+  #grid-inner{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+}
 </style>
 </head>
 <body>
 
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <div id="toast"></div>
+<div id="mob-overlay" onclick="closeSidebar()"></div>
 
-<!-- ══════════ SIDEBAR ══════════ -->
-<div id="sidebar">
-  <div id="sb-head">
-    <div id="sb-title">Departamento</div>
-    <div id="sb-sub">Galería · Inventario</div>
+<!-- ══════════ MOBILE TOP BAR ══════════ -->
+<div id="mob-bar">
+  <div id="mob-bar-top">
+    <button id="mob-menu-btn" onclick="openSidebar()" aria-label="Menú">☰</button>
+    <span id="mob-room-name" style="font-family:'Lora',serif;font-size:15px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</span>
+    <button id="mob-action-btn" onclick="mobAction()">↑ Subir</button>
   </div>
-
-  <div id="sb-tabs">
-    <button class="tab active" id="tab-photos" onclick="switchView('photos')">📷 Fotos</button>
-    <button class="tab" id="tab-inv" onclick="switchView('inventory')">📦 Inventario</button>
+  <div id="mob-tabs">
+    <button class="mob-tab active" id="mob-tab-photos" onclick="switchView('photos')">📷 Fotos</button>
+    <button class="mob-tab" id="mob-tab-inv" onclick="switchView('inventory')">📦 Inventario</button>
   </div>
+</div>
 
-  <!-- Photo rooms -->
-  <div id="sb-rooms">
-    <div id="room-list"></div>
-    <div style="flex:1"></div>
-    <div id="sb-foot">
-      <button id="add-room-btn" onclick="showAddRoom()">
-        <span style="font-size:16px">+</span> Agregar ambiente
-      </button>
-      <div id="add-room-form">
-        <input id="add-room-input" placeholder="Nombre del ambiente" maxlength="40">
-        <div class="frow">
-          <button class="bsm p" onclick="saveRoom()">Guardar</button>
-          <button class="bsm" onclick="hideAddRoom()">Cancelar</button>
+<!-- ══════════ APP BODY ══════════ -->
+<div id="app-body">
+
+  <!-- ── SIDEBAR ── -->
+  <div id="sidebar">
+    <div id="sb-head">
+      <div id="sb-title">Departamento</div>
+      <div id="sb-sub">Galería · Inventario</div>
+    </div>
+    <div id="sb-tabs">
+      <button class="tab active" id="tab-photos" onclick="switchView('photos')">📷 Fotos</button>
+      <button class="tab" id="tab-inv" onclick="switchView('inventory')">📦 Inventario</button>
+    </div>
+    <div id="sb-rooms">
+      <div id="room-list"></div>
+      <div style="flex:1"></div>
+      <div id="sb-foot">
+        <button id="add-room-btn" onclick="showAddRoom()">
+          <span style="font-size:16px">+</span> Agregar ambiente
+        </button>
+        <div id="add-room-form">
+          <input id="add-room-input" placeholder="Nombre del ambiente" maxlength="40">
+          <div class="frow">
+            <button class="bsm p" onclick="saveRoom()">Guardar</button>
+            <button class="bsm" onclick="hideAddRoom()">Cancelar</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Inventory filters -->
-  <div id="sb-inv">
-    <div>
-      <div class="sb-filter-label">Asignado a</div>
-      <div class="person-btns">
+    <div id="sb-inv">
+      <div>
+        <div class="sb-filter-label">Asignado a</div>
         <button class="pb active-all" id="pb-all" onclick="setPersonFilter('all')">
           <span class="pb-dot" style="background:var(--acc)"></span>Todos
         </button>
@@ -229,56 +295,48 @@ textarea.cfg-input{resize:vertical;min-height:150px;margin-bottom:0}
           <span class="pb-dot" style="background:var(--anita-t)"></span>Anita
         </button>
       </div>
-    </div>
-    <div>
-      <div class="sb-filter-label">Ambiente</div>
-      <select id="inv-room-filter" onchange="setRoomFilter(this.value)">
-        <option value="all">Todos los ambientes</option>
-      </select>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ MAIN ══════════ -->
-<div id="main">
-
-  <!-- Mobile bar -->
-  <div id="mob-bar">
-    <button id="mob-menu-btn" onclick="document.getElementById('sidebar').style.display='flex'">☰</button>
-    <span id="mob-room-name" style="font-family:'Lora',serif;font-size:15px;font-weight:500">—</span>
-  </div>
-
-  <!-- ── PHOTOS VIEW ── -->
-  <div id="photos-view">
-    <div id="ph-head">
       <div>
-        <div id="room-title">—</div>
-        <div id="room-meta">Conectando…</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span id="upload-status" style="font-size:12px;color:var(--t3)"></span>
-        <button id="upload-btn" onclick="document.getElementById('file-input').click()">
-          ↑ Subir fotos
-        </button>
+        <div class="sb-filter-label">Ambiente</div>
+        <select id="inv-room-filter" onchange="setRoomFilter(this.value)">
+          <option value="all">Todos los ambientes</option>
+        </select>
       </div>
     </div>
-    <input type="file" id="file-input" multiple accept="image/*" style="display:none"
-           onchange="handleFiles(this.files)">
-    <div id="photo-grid"><div id="grid-inner"></div></div>
   </div>
 
-  <!-- ── INVENTORY VIEW ── -->
-  <div id="inventory-view">
-    <div id="inv-head">
-      <div>
-        <div id="inv-title">Inventario</div>
-        <div id="inv-meta">—</div>
+  <!-- ── MAIN ── -->
+  <div id="main">
+
+    <!-- PHOTOS VIEW -->
+    <div id="photos-view">
+      <div id="ph-head">
+        <div>
+          <div id="room-title">—</div>
+          <div id="room-meta">Conectando…</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span id="upload-status" style="font-size:12px;color:var(--t3)"></span>
+          <button id="upload-btn" onclick="document.getElementById('file-input').click()">↑ Subir fotos</button>
+        </div>
       </div>
-      <button id="add-item-btn" onclick="openItemModal()">+ Agregar</button>
+      <input type="file" id="file-input" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
+      <div id="photo-grid"><div id="grid-inner"></div></div>
     </div>
-    <div id="inv-list"></div>
-  </div>
-</div>
+
+    <!-- INVENTORY VIEW -->
+    <div id="inventory-view">
+      <div id="inv-head">
+        <div>
+          <div id="inv-title">Inventario</div>
+          <div id="inv-meta">—</div>
+        </div>
+        <button id="add-item-btn" onclick="openItemModal()">+ Agregar</button>
+      </div>
+      <div id="inv-list"></div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app-body -->
 
 <!-- ══════════ LIGHTBOX ══════════ -->
 <div id="lightbox" onclick="closeLightbox()">
@@ -293,13 +351,12 @@ textarea.cfg-input{resize:vertical;min-height:150px;margin-bottom:0}
 <!-- ══════════ ITEM MODAL ══════════ -->
 <div id="item-modal" onclick="closeItemModal()">
   <div id="item-box" onclick="event.stopPropagation()">
+    <div class="modal-drag"></div>
     <h3 id="modal-title">Agregar elemento</h3>
-
     <div class="form-field">
       <label class="form-label">Nombre *</label>
       <input class="form-input" id="item-name" placeholder="Ej: Sillón gris, Mesa ratona…" maxlength="80">
     </div>
-
     <div class="form-field">
       <label class="form-label">Asignado a *</label>
       <div class="person-select">
@@ -308,14 +365,12 @@ textarea.cfg-input{resize:vertical;min-height:150px;margin-bottom:0}
         <button class="ps-opt" id="ps-ambos" onclick="selectPerson('ambos')">Ambos</button>
       </div>
     </div>
-
     <div class="form-field">
       <label class="form-label">Ambiente</label>
       <select class="form-select" id="item-room">
         <option value="">Sin ambiente específico</option>
       </select>
     </div>
-
     <div class="form-field">
       <label class="form-label">Estado</label>
       <select class="form-select" id="item-status">
@@ -325,12 +380,10 @@ textarea.cfg-input{resize:vertical;min-height:150px;margin-bottom:0}
         <option value="tirar">A tirar</option>
       </select>
     </div>
-
     <div class="form-field">
       <label class="form-label">Notas</label>
-      <textarea class="form-textarea" id="item-notes" placeholder="Descripción, color, marca, condición…" maxlength="300"></textarea>
+      <textarea class="form-textarea" id="item-notes" placeholder="Color, marca, condición…" maxlength="300"></textarea>
     </div>
-
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeItemModal()">Cancelar</button>
       <button class="btn-primary" onclick="saveItem()">Guardar</button>
@@ -338,215 +391,202 @@ textarea.cfg-input{resize:vertical;min-height:150px;margin-bottom:0}
   </div>
 </div>
 
-<!-- ══════════ CONFIG OVERLAY ══════════ -->
+<!-- ══════════ CONFIG ══════════ -->
 <div id="config-overlay">
   <div id="config-box">
+    <div class="modal-drag"></div>
     <h2>Configuración inicial</h2>
-    <p style="font-size:13px;color:var(--t2);margin-bottom:20px;line-height:1.6">
-      Esta configuración se guarda en tu navegador. La hacés una sola vez.
-    </p>
-
+    <p style="font-size:13px;color:var(--t2);margin-bottom:18px;line-height:1.6">Se guarda en tu navegador. La hacés una sola vez.</p>
     <div class="cfg-section">
       <div style="font-size:14px;font-weight:500;margin-bottom:10px">🔥 Firebase (base de datos)</div>
       <label class="cfg-label">firebaseConfig</label>
-      <textarea class="cfg-input" id="cfg-firebase" spellcheck="false" placeholder='{
-  apiKey: "AIza...",
-  authDomain: "mi-app.firebaseapp.com",
-  projectId: "mi-app",
-  messagingSenderId: "123...",
-  appId: "1:123:web:abc..."
-}'></textarea>
-      <div class="cfg-hint">Firebase Console → Project Settings → Tu app web → <code>firebaseConfig</code></div>
+      <textarea class="cfg-input" id="cfg-firebase" spellcheck="false" placeholder='{&#10;  apiKey: "AIza...",&#10;  authDomain: "...",&#10;  projectId: "...",&#10;  messagingSenderId: "...",&#10;  appId: "..."&#10;}'></textarea>
+      <div class="cfg-hint">Firebase Console → Project Settings → Tu app web</div>
     </div>
-
     <div class="cfg-section">
-      <div style="font-size:14px;font-weight:500;margin-bottom:10px">☁️ Cloudinary (fotos — gratis)</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:10px">☁️ Cloudinary (fotos)</div>
       <label class="cfg-label">Cloud Name</label>
       <input class="cfg-input" id="cfg-cloud" placeholder="mi-cloud-name" style="margin-bottom:10px">
-      <div class="cfg-hint" style="margin-bottom:10px">Dashboard de Cloudinary → arriba a la izquierda</div>
       <label class="cfg-label">Upload Preset (unsigned)</label>
-      <input class="cfg-input" id="cfg-preset" placeholder="mi-preset-unsigned">
-      <div class="cfg-hint">Settings → Upload → Add upload preset → <strong>Unsigned</strong></div>
+      <input class="cfg-input" id="cfg-preset" placeholder="mi-preset">
     </div>
-
     <div id="config-err"></div>
-    <button id="config-save" onclick="saveConfig()">Conectar y empezar →</button>
+    <button id="config-save" onclick="saveConfig()">Conectar →</button>
   </div>
 </div>
 
 <!-- ══════════ SCRIPT ══════════ -->
 <script type="module">
 
-// ── OPCIÓN: incrustar config aquí para que otros no la necesiten ingresar ──
 const EMBEDDED_CONFIG = {
-  firebase: { apiKey:"AIzaSyDp1PNABP2T-uNvbM20nPj6dhVaFKfeEdg", authDomain:"depto-fotos.firebaseapp.com", projectId:"depto-fotos", storageBucket:"depto-fotos.firebasestorage.app", messagingSenderId:"121291580762", appId:"1:121291580762:web:2cc86971796c93b6f87f63" },
-  cloudName: "de7yeetek",
-  cloudPreset: "utajrmom"
+  firebase: {
+    apiKey:"AIzaSyDp1PNABP2T-uNvbM20nPj6dhVaFKfeEdg",
+    authDomain:"depto-fotos.firebaseapp.com",
+    projectId:"depto-fotos",
+    storageBucket:"depto-fotos.firebasestorage.app",
+    messagingSenderId:"121291580762",
+    appId:"1:121291580762:web:2cc86971796c93b6f87f63"
+  },
+  cloudName:"de7yeetek",
+  cloudPreset:"utajrmom"
 };
-// ──────────────────────────────────────────────────────────────────────────
 
-let db, _fb = {};
-let CFG = null;
+let db, _fb={}, CFG=null;
 
-// ─────────────────────────────────────────────────────────
-// Firebase init
-// ─────────────────────────────────────────────────────────
-async function initFirebase(cfg) {
-  CFG = cfg;
-  const VER = "11.1.0";
-  const base = `https://www.gstatic.com/firebasejs/${VER}`;
-  const [appM, fsM] = await Promise.all([
-    import(`${base}/firebase-app.js`),
-    import(`${base}/firebase-firestore.js`),
-  ]);
-  const app = appM.initializeApp(cfg.firebase);
-  db = fsM.getFirestore(app);
-  _fb = { ...fsM };
+async function initFirebase(cfg){
+  CFG=cfg;
+  const V="11.1.0", base=`https://www.gstatic.com/firebasejs/${V}`;
+  const [aM,fM]= await Promise.all([import(`${base}/firebase-app.js`),import(`${base}/firebase-firestore.js`)]);
+  db=fM.getFirestore(aM.initializeApp(cfg.firebase));
+  _fb={...fM};
   await seedRooms();
   listenRooms();
   listenInventory();
 }
 
-// ─────────────────────────────────────────────────────────
-// Default rooms
-// ─────────────────────────────────────────────────────────
-const DEFAULT_ROOMS = [
-  {id:"living",name:"Living",order:1},
-  {id:"cocina",name:"Cocina",order:2},
-  {id:"cuarto-servicio",name:"Cuarto de Servicio",order:3},
-  {id:"lavadero",name:"Lavadero",order:4},
-  {id:"hab-martin",name:"Habitación Martín",order:5},
-  {id:"hab-anita",name:"Habitación Anita",order:6},
-  {id:"hab-principal",name:"Habitación Principal",order:7},
-  {id:"vestidor",name:"Vestidor",order:8},
-  {id:"placard-toilette",name:"Placard / Toilette",order:9},
-  {id:"pasillo",name:"Pasillo Principal",order:10},
+// ── Default rooms ──
+const DEFAULT_ROOMS=[
+  {id:"living",           name:"Living",               order:1},
+  {id:"cocina",           name:"Cocina",               order:2},
+  {id:"cuarto-servicio",  name:"Cuarto de Servicio",   order:3},
+  {id:"lavadero",         name:"Lavadero",             order:4},
+  {id:"hab-martin",       name:"Habitación Martín",    order:5},
+  {id:"hab-anita",        name:"Habitación Anita",     order:6},
+  {id:"hab-principal",    name:"Habitación Principal", order:7},
+  {id:"vestidor",         name:"Vestidor",             order:8},
+  {id:"placard-toilette", name:"Placard / Toilette",   order:9},
+  {id:"pasillo",          name:"Pasillo Principal",    order:10},
 ];
 
-async function seedRooms() {
-  const {collection,getDocs,setDoc,doc,serverTimestamp} = _fb;
-  const snap = await getDocs(collection(db,"rooms"));
-  if (!snap.empty) return;
-  for (const r of DEFAULT_ROOMS)
+async function seedRooms(){
+  const {collection,getDocs,setDoc,doc,serverTimestamp}=_fb;
+  const snap=await getDocs(collection(db,"rooms"));
+  if(!snap.empty) return;
+  for(const r of DEFAULT_ROOMS)
     await setDoc(doc(db,"rooms",r.id),{name:r.name,order:r.order,createdAt:serverTimestamp()});
 }
 
-// ─────────────────────────────────────────────────────────
-// State
-// ─────────────────────────────────────────────────────────
-let rooms = [];
-let currentRoomId = null;
-let currentPhotos = [];
-let inventoryAll = [];
-let invPersonFilter = "all";
-let invRoomFilter = "all";
-let lbIndex = 0;
-let unsub = null;
-let editingItemId = null;
-let selectedPerson = "";
-let currentView = "photos";
+// ── State ──
+let rooms=[],currentRoomId=null,currentPhotos=[],inventoryAll=[];
+let invPersonFilter="all",invRoomFilter="all";
+let lbIndex=0,unsub=null,editingItemId=null,selectedPerson="",currentView="photos";
 
-// ─────────────────────────────────────────────────────────
-// View switch
-// ─────────────────────────────────────────────────────────
-window.switchView = function(v) {
-  currentView = v;
-  document.getElementById("photos-view").style.display    = v==="photos"    ? "flex" : "none";
-  document.getElementById("inventory-view").style.display = v==="inventory" ? "flex" : "none";
-  document.getElementById("sb-rooms").style.display       = v==="photos"    ? "flex" : "none";
-  document.getElementById("sb-inv").style.display         = v==="inventory" ? "flex" : "none";
-  document.getElementById("tab-photos").classList.toggle("active", v==="photos");
-  document.getElementById("tab-inv").classList.toggle("active", v==="inventory");
+// ── Mobile drawer ──
+window.openSidebar=()=>{
+  document.getElementById("sidebar").classList.add("open");
+  document.getElementById("mob-overlay").classList.add("show");
+};
+window.closeSidebar=()=>{
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("mob-overlay").classList.remove("show");
+};
+window.mobAction=()=>{
+  if(currentView==="photos") document.getElementById("file-input").click();
+  else openItemModal();
 };
 
-// ─────────────────────────────────────────────────────────
-// Rooms
-// ─────────────────────────────────────────────────────────
-function listenRooms() {
-  const {collection,query,orderBy,onSnapshot} = _fb;
-  const q = query(collection(db,"rooms"),orderBy("order"));
-  onSnapshot(q, snap => {
-    rooms = snap.docs.map(d=>({id:d.id,...d.data()}));
+// ── View switch ──
+window.switchView=function(v){
+  currentView=v;
+  document.getElementById("photos-view").style.display    =v==="photos"   ?"flex":"none";
+  document.getElementById("inventory-view").style.display =v==="inventory"?"flex":"none";
+  document.getElementById("sb-rooms").style.display       =v==="photos"   ?"flex":"none";
+  document.getElementById("sb-inv").style.display         =v==="inventory"?"flex":"none";
+  ["tab-photos","tab-inv"].forEach(id=>document.getElementById(id).classList.remove("active"));
+  ["mob-tab-photos","mob-tab-inv"].forEach(id=>document.getElementById(id).classList.remove("active"));
+  document.getElementById(v==="photos"?"tab-photos":"tab-inv").classList.add("active");
+  document.getElementById(v==="photos"?"mob-tab-photos":"mob-tab-inv").classList.add("active");
+  // update mob action button
+  document.getElementById("mob-action-btn").textContent=v==="photos"?"↑ Subir":"+ Agregar";
+  // update mob room name
+  if(v==="inventory") document.getElementById("mob-room-name").textContent="Inventario";
+  else if(currentRoomId){
+    const r=rooms.find(x=>x.id===currentRoomId);
+    document.getElementById("mob-room-name").textContent=r?.name||"";
+  }
+  closeSidebar();
+};
+
+// ── Rooms ──
+function listenRooms(){
+  const {collection,query,orderBy,onSnapshot}=_fb;
+  onSnapshot(query(collection(db,"rooms"),orderBy("order")),snap=>{
+    rooms=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderSidebar();
-    populateRoomDropdowns();
-    if (!currentRoomId && rooms.length) selectRoom(rooms[0].id);
+    populateDropdowns();
+    if(!currentRoomId&&rooms.length) selectRoom(rooms[0].id);
   });
 }
 
-function renderSidebar() {
-  document.getElementById("room-list").innerHTML = rooms.map(r=>`
+function renderSidebar(){
+  document.getElementById("room-list").innerHTML=rooms.map(r=>`
     <div class="room-item${r.id===currentRoomId?" active":""}" onclick="selectRoom('${r.id}')">
       <span>${esc(r.name)}</span>
       <span class="rc" id="rc-${r.id}"></span>
     </div>`).join("");
 }
 
-function populateRoomDropdowns() {
-  const opts = rooms.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join("");
-  document.getElementById("item-room").innerHTML = '<option value="">Sin ambiente específico</option>'+opts;
-  document.getElementById("inv-room-filter").innerHTML = '<option value="all">Todos los ambientes</option>'+opts;
-  document.getElementById("inv-room-filter").value = invRoomFilter;
+function populateDropdowns(){
+  const opts=rooms.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join("");
+  document.getElementById("item-room").innerHTML='<option value="">Sin ambiente específico</option>'+opts;
+  document.getElementById("inv-room-filter").innerHTML='<option value="all">Todos los ambientes</option>'+opts;
+  document.getElementById("inv-room-filter").value=invRoomFilter;
 }
 
-window.selectRoom = function(id) {
-  currentRoomId = id;
-  const r = rooms.find(x=>x.id===id);
-  const name = r?.name||"";
-  document.getElementById("room-title").textContent = name;
-  document.getElementById("mob-room-name").textContent = name;
-  document.getElementById("room-meta").textContent = "Cargando…";
+window.selectRoom=function(id){
+  currentRoomId=id;
+  const r=rooms.find(x=>x.id===id);
+  const name=r?.name||"";
+  document.getElementById("room-title").textContent=name;
+  document.getElementById("mob-room-name").textContent=name;
+  document.getElementById("room-meta").textContent="Cargando…";
   renderSidebar();
   loadPhotos(id);
+  closeSidebar();
 };
 
-// ─────────────────────────────────────────────────────────
-// Photos
-// ─────────────────────────────────────────────────────────
-function loadPhotos(roomId) {
-  const {collection,query,orderBy,onSnapshot} = _fb;
-  if (unsub) unsub();
-  document.getElementById("grid-inner").innerHTML =
-    Array(8).fill('<div class="skeleton"></div>').join("");
-  const q = query(collection(db,"photos"),orderBy("uploadedAt","desc"));
-  unsub = onSnapshot(q, snap=>{
-    currentPhotos = snap.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.roomId===roomId);
+// ── Photos ──
+function loadPhotos(roomId){
+  const {collection,query,orderBy,onSnapshot}=_fb;
+  if(unsub) unsub();
+  document.getElementById("grid-inner").innerHTML=Array(8).fill('<div class="skeleton"></div>').join("");
+  unsub=onSnapshot(query(collection(db,"photos"),orderBy("uploadedAt","desc")),snap=>{
+    currentPhotos=snap.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.roomId===roomId);
     renderGrid();
     const el=document.getElementById(`rc-${roomId}`);
-    if(el) el.textContent = currentPhotos.length||"";
+    if(el) el.textContent=currentPhotos.length||"";
   });
 }
 
-function renderGrid() {
-  const n = currentPhotos.length;
-  document.getElementById("room-meta").textContent = `${n} ${n===1?"foto":"fotos"}`;
-  if (n===0) {
+function renderGrid(){
+  const n=currentPhotos.length;
+  document.getElementById("room-meta").textContent=`${n} ${n===1?"foto":"fotos"}`;
+  if(n===0){
     document.getElementById("grid-inner").innerHTML=`
       <div class="empty-state" onclick="document.getElementById('file-input').click()">
-        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" opacity=".35">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" opacity=".35">
           <rect x="3" y="3" width="18" height="18" rx="2"/>
           <circle cx="8.5" cy="8.5" r="1.5"/>
           <polyline points="21 15 16 10 5 21"/>
         </svg>
-        <p>Sin fotos — hacé clic para subir</p>
+        <p>Sin fotos — tocá para subir</p>
       </div>`;
     return;
   }
-  document.getElementById("grid-inner").innerHTML =
+  document.getElementById("grid-inner").innerHTML=
     currentPhotos.map((p,i)=>`
       <div class="photo-card" onclick="openLightbox(${i})">
         <img src="${esc(p.url)}" alt="" loading="lazy">
         <div class="pco"></div>
-      </div>`).join("") +
+      </div>`).join("")+
     `<div class="upload-card" onclick="document.getElementById('file-input').click()">
        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
        </svg></div>`;
 }
 
-// ─────────────────────────────────────────────────────────
-// Upload (Cloudinary)
-// ─────────────────────────────────────────────────────────
-async function compress(file, maxW=1400, q=0.82) {
+// ── Upload ──
+async function compress(file,maxW=1400,q=0.82){
   return new Promise(res=>{
     const r=new FileReader();
     r.onload=e=>{
@@ -565,53 +605,45 @@ async function compress(file, maxW=1400, q=0.82) {
   });
 }
 
-async function uploadCloudinary(blob) {
-  const fd = new FormData();
-  fd.append("file", blob);
-  fd.append("upload_preset", CFG.cloudPreset);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CFG.cloudName}/image/upload`,{method:"POST",body:fd});
-  if (!res.ok) throw new Error("Cloudinary error "+res.status);
+async function uploadCloud(blob){
+  const fd=new FormData();
+  fd.append("file",blob);
+  fd.append("upload_preset",CFG.cloudPreset);
+  const res=await fetch(`https://api.cloudinary.com/v1_1/${CFG.cloudName}/image/upload`,{method:"POST",body:fd});
+  if(!res.ok) throw new Error("Cloudinary error "+res.status);
   return (await res.json()).secure_url;
 }
 
-window.handleFiles = async function(files) {
-  if (!files?.length||!currentRoomId) return;
-  const arr = Array.from(files);
-  const btn = document.getElementById("upload-btn");
-  const status = document.getElementById("upload-status");
-  const bar = document.getElementById("progress-bar");
-  const fill = document.getElementById("progress-fill");
-  btn.disabled=true; bar.style.display="block";
+window.handleFiles=async function(files){
+  if(!files?.length||!currentRoomId) return;
+  const arr=Array.from(files);
+  const btn=document.getElementById("upload-btn");
+  const mbtn=document.getElementById("mob-action-btn");
+  const status=document.getElementById("upload-status");
+  const bar=document.getElementById("progress-bar");
+  const fill=document.getElementById("progress-fill");
+  btn.disabled=true;mbtn.disabled=true;bar.style.display="block";
   let ok=0;
-  for (let i=0;i<arr.length;i++) {
+  for(let i=0;i<arr.length;i++){
     status.textContent=`Subiendo ${i+1}/${arr.length}…`;
     fill.style.width=`${(i/arr.length)*100}%`;
-    try {
-      const blob = await compress(arr[i]);
-      const url = await uploadCloudinary(blob);
+    try{
+      const blob=await compress(arr[i]);
+      const url=await uploadCloud(blob);
       const {addDoc,collection,serverTimestamp}=_fb;
-      await addDoc(collection(db,"photos"),{
-        roomId:currentRoomId, url,
-        filename:arr[i].name,
-        uploadedAt:serverTimestamp()
-      });
+      await addDoc(collection(db,"photos"),{roomId:currentRoomId,url,filename:arr[i].name,uploadedAt:serverTimestamp()});
       ok++;
-    } catch(e) {
-      console.error(e);
-      toast("Error subiendo "+arr[i].name);
-    }
+    }catch(e){console.error(e);toast("Error subiendo "+arr[i].name);}
   }
   fill.style.width="100%";
   setTimeout(()=>{bar.style.display="none";fill.style.width="0%";},700);
   status.textContent="";
-  btn.disabled=false;
+  btn.disabled=false;mbtn.disabled=false;
   if(ok) toast(`${ok} ${ok===1?"foto subida":"fotos subidas"} ✓`);
   document.getElementById("file-input").value="";
 };
 
-// ─────────────────────────────────────────────────────────
-// Add Room
-// ─────────────────────────────────────────────────────────
+// ── Add room ──
 window.showAddRoom=()=>{
   document.getElementById("add-room-btn").style.display="none";
   document.getElementById("add-room-form").style.display="block";
@@ -635,17 +667,14 @@ document.getElementById("add-room-input").addEventListener("keydown",e=>{
   if(e.key==="Escape") window.hideAddRoom();
 });
 
-// ─────────────────────────────────────────────────────────
-// Lightbox
-// ─────────────────────────────────────────────────────────
+// ── Lightbox ──
 window.openLightbox=function(idx){
   lbIndex=idx;
   document.getElementById("lightbox").classList.add("open");
   renderLb();
 };
 function renderLb(){
-  const p=currentPhotos[lbIndex];
-  if(!p) return;
+  const p=currentPhotos[lbIndex];if(!p) return;
   const room=rooms.find(r=>r.id===currentRoomId);
   document.getElementById("lb-img").src=p.url;
   document.getElementById("lb-label").textContent=room?.name||"";
@@ -662,59 +691,49 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape") window.closeLightbox();
 });
 
-// ─────────────────────────────────────────────────────────
-// Inventory
-// ─────────────────────────────────────────────────────────
-function listenInventory() {
+// ── Inventory ──
+function listenInventory(){
   const {collection,query,orderBy,onSnapshot}=_fb;
-  const q=query(collection(db,"inventory"),orderBy("createdAt","desc"));
-  onSnapshot(q,snap=>{
+  onSnapshot(query(collection(db,"inventory"),orderBy("createdAt","desc")),snap=>{
     inventoryAll=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderInventory();
   });
 }
 
-function renderInventory() {
+function renderInventory(){
   let items=[...inventoryAll];
   if(invPersonFilter!=="all") items=items.filter(i=>i.assignedTo===invPersonFilter||i.assignedTo==="ambos");
   if(invRoomFilter!=="all")   items=items.filter(i=>i.room===invRoomFilter);
-
   const el=document.getElementById("inv-list");
   const n=items.length;
   document.getElementById("inv-meta").textContent=`${n} ${n===1?"elemento":"elementos"}`;
-
+  const STATUS={"en-uso":"En uso","guardado":"Guardado","donar":"A donar","tirar":"A tirar"};
   if(n===0){
     el.innerHTML=`<div class="inv-empty">
       <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" opacity=".35">
         <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
       </svg>
-      <span>Sin elementos${invPersonFilter!=="all"||invRoomFilter!=="all"?" con ese filtro":""} — agregá uno con el botón +</span>
+      <span>Sin elementos — agregá con el botón +</span>
     </div>`;
     return;
   }
-
-  const STATUS_LABELS={
-    "en-uso":"En uso","guardado":"Guardado","donar":"A donar","tirar":"A tirar"
-  };
-
   el.innerHTML=items.map(item=>{
     const room=rooms.find(r=>r.id===item.room);
-    const pClass=item.assignedTo==="martin"?"badge-martin":item.assignedTo==="anita"?"badge-anita":"badge-ambos";
-    const pLabel=item.assignedTo==="martin"?"Martín":item.assignedTo==="anita"?"Anita":"Ambos";
-    const statusLabel=STATUS_LABELS[item.status]||item.status||"";
-    return `
-      <div class="item-card" onclick="openItemModal('${item.id}')">
-        <div class="item-card-body">
-          <div class="item-name">${esc(item.name)}</div>
-          <div class="item-meta">
-            <span class="badge ${pClass}">${pLabel}</span>
-            ${room?`<span style="color:var(--t3);font-size:12px">${esc(room.name)}</span>`:""}
-            ${statusLabel?`<span class="badge badge-status">${statusLabel}</span>`:""}
-          </div>
-          ${item.notes?`<div class="item-notes">${esc(item.notes)}</div>`:""}
+    const pC=item.assignedTo==="martin"?"badge-martin":item.assignedTo==="anita"?"badge-anita":"badge-ambos";
+    const pL=item.assignedTo==="martin"?"Martín":item.assignedTo==="anita"?"Anita":"Ambos";
+    const sL=STATUS[item.status]||"";
+    return `<div class="item-card" onclick="openItemModal('${item.id}')">
+      <div class="item-card-body">
+        <div class="item-name">${esc(item.name)}</div>
+        <div class="item-meta">
+          <span class="badge ${pC}">${pL}</span>
+          ${room?`<span style="color:var(--t3);font-size:12px">${esc(room.name)}</span>`:""}
+          ${sL?`<span class="badge badge-status">${sL}</span>`:""}
         </div>
-        <button class="item-del" title="Eliminar" onclick="event.stopPropagation();deleteItem('${item.id}')">✕</button>
-      </div>`;
+        ${item.notes?`<div class="item-notes">${esc(item.notes)}</div>`:""}
+      </div>
+      <button class="item-del" onclick="event.stopPropagation();deleteItem('${item.id}')" aria-label="Eliminar">✕</button>
+    </div>`;
   }).join("");
 }
 
@@ -724,28 +743,22 @@ window.setPersonFilter=function(p){
   document.getElementById("pb-martin").className="pb"+(p==="martin"?" active-m":"");
   document.getElementById("pb-anita").className ="pb"+(p==="anita" ?" active-a":"");
   renderInventory();
+  closeSidebar();
 };
+window.setRoomFilter=function(r){invRoomFilter=r;renderInventory();};
 
-window.setRoomFilter=function(r){
-  invRoomFilter=r;
-  renderInventory();
-};
-
-// ─────────────────────────────────────────────────────────
-// Item modal
-// ─────────────────────────────────────────────────────────
-window.openItemModal=function(idOrNull) {
-  editingItemId = typeof idOrNull==="string"?idOrNull:null;
+// ── Item modal ──
+window.openItemModal=function(idOrNull){
+  editingItemId=typeof idOrNull==="string"?idOrNull:null;
   document.getElementById("modal-title").textContent=editingItemId?"Editar elemento":"Agregar elemento";
-
-  if (editingItemId) {
+  if(editingItemId){
     const item=inventoryAll.find(i=>i.id===editingItemId)||{};
     document.getElementById("item-name").value=item.name||"";
     document.getElementById("item-room").value=item.room||"";
     document.getElementById("item-status").value=item.status||"en-uso";
     document.getElementById("item-notes").value=item.notes||"";
     selectPerson(item.assignedTo||"ambos");
-  } else {
+  }else{
     document.getElementById("item-name").value="";
     document.getElementById("item-room").value="";
     document.getElementById("item-status").value="en-uso";
@@ -753,61 +766,51 @@ window.openItemModal=function(idOrNull) {
     selectPerson("");
   }
   document.getElementById("item-modal").classList.add("open");
-  setTimeout(()=>document.getElementById("item-name").focus(),50);
+  setTimeout(()=>document.getElementById("item-name").focus(),80);
 };
-
 window.closeItemModal=()=>{
   document.getElementById("item-modal").classList.remove("open");
-  editingItemId=null; selectedPerson="";
+  editingItemId=null;selectedPerson="";
 };
-
 window.selectPerson=function(p){
   selectedPerson=p;
-  const classes={martin:"sel-m",anita:"sel-a",ambos:"sel-b"};
+  const cl={martin:"sel-m",anita:"sel-a",ambos:"sel-b"};
   ["martin","anita","ambos"].forEach(k=>{
-    const el=document.getElementById("ps-"+k);
-    el.className="ps-opt"+(k===p?" "+classes[k]:"");
+    document.getElementById("ps-"+k).className="ps-opt"+(k===p?" "+cl[k]:"");
   });
 };
-
 window.saveItem=async function(){
   const name=document.getElementById("item-name").value.trim();
   if(!name){toast("El nombre es obligatorio");return;}
   if(!selectedPerson){toast("Seleccioná a quién se asigna");return;}
-  const data={
-    name,
-    assignedTo:selectedPerson,
+  const data={name,assignedTo:selectedPerson,
     room:document.getElementById("item-room").value,
     status:document.getElementById("item-status").value,
-    notes:document.getElementById("item-notes").value.trim(),
-  };
+    notes:document.getElementById("item-notes").value.trim()};
   const {collection,addDoc,doc,updateDoc,serverTimestamp}=_fb;
   if(editingItemId){
     await updateDoc(doc(db,"inventory",editingItemId),data);
-    toast("Elemento actualizado ✓");
-  } else {
+    toast("Actualizado ✓");
+  }else{
     await addDoc(collection(db,"inventory"),{...data,createdAt:serverTimestamp()});
-    toast("Elemento agregado ✓");
+    toast("Agregado ✓");
   }
   window.closeItemModal();
 };
-
 window.deleteItem=async function(id){
-  if(!confirm("¿Eliminar este elemento del inventario?")) return;
+  if(!confirm("¿Eliminar este elemento?")) return;
   const {doc,deleteDoc}=_fb;
   await deleteDoc(doc(db,"inventory",id));
   toast("Eliminado");
 };
 
-// ─────────────────────────────────────────────────────────
-// Config
-// ─────────────────────────────────────────────────────────
+// ── Config ──
 window.saveConfig=async function(){
   const errEl=document.getElementById("config-err");
   const btn=document.getElementById("config-save");
   errEl.style.display="none";
-  btn.textContent="Conectando…"; btn.disabled=true;
-  try {
+  btn.textContent="Conectando…";btn.disabled=true;
+  try{
     const raw=document.getElementById("cfg-firebase").value.trim();
     const match=raw.match(/\{[\s\S]*\}/);
     if(!match) throw new Error("No encontré el objeto firebaseConfig");
@@ -815,46 +818,29 @@ window.saveConfig=async function(){
     if(!firebase.apiKey) throw new Error("apiKey no encontrado");
     const cloudName=document.getElementById("cfg-cloud").value.trim();
     const cloudPreset=document.getElementById("cfg-preset").value.trim();
-    if(!cloudName||!cloudPreset) throw new Error("Completá el Cloud Name y el Upload Preset de Cloudinary");
+    if(!cloudName||!cloudPreset) throw new Error("Completá los datos de Cloudinary");
     const cfg={firebase,cloudName,cloudPreset};
     localStorage.setItem("apt-cfg-v2",JSON.stringify(cfg));
     document.getElementById("config-overlay").classList.remove("open");
     await initFirebase(cfg);
     toast("¡Conectado! ✓");
-  } catch(e) {
-    errEl.textContent="Error: "+e.message;
-    errEl.style.display="block";
+  }catch(e){
+    errEl.textContent="Error: "+e.message;errEl.style.display="block";
   }
-  btn.textContent="Conectar y empezar →"; btn.disabled=false;
+  btn.textContent="Conectar →";btn.disabled=false;
 };
 
-// ─────────────────────────────────────────────────────────
-// Utils
-// ─────────────────────────────────────────────────────────
+// ── Utils ──
 function toast(msg){
   const t=document.getElementById("toast");
-  t.textContent=msg; t.classList.add("show");
+  t.textContent=msg;t.classList.add("show");
   setTimeout(()=>t.classList.remove("show"),2800);
 }
-function esc(s){
-  return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
-// ─────────────────────────────────────────────────────────
-// Boot
-// ─────────────────────────────────────────────────────────
+// ── Boot ──
 (async()=>{
-  // Check for embedded config (uncomment EMBEDDED_CONFIG above to use)
-  if(typeof EMBEDDED_CONFIG!=="undefined") {
-    await initFirebase(EMBEDDED_CONFIG);
-    return;
-  }
-  const saved=localStorage.getItem("apt-cfg-v2");
-  if(saved){
-    try{ await initFirebase(JSON.parse(saved)); return; }
-    catch(e){ localStorage.removeItem("apt-cfg-v2"); }
-  }
-  document.getElementById("config-overlay").classList.add("open");
+  await initFirebase(EMBEDDED_CONFIG);
 })();
 
 </script>
