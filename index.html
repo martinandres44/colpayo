@@ -182,6 +182,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .btn-primary:hover{opacity:.88}
 .btn-cancel{padding:10px 16px;background:none;border:1px solid var(--border);border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--t2)}
 
+
+/* ── División view ── */
+#division-view{flex:1;display:none;flex-direction:column;overflow:hidden}
+#div-head{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--wh);flex-shrink:0}
+#div-title{font-family:'Lora',serif;font-size:18px;font-weight:500}
+#div-meta{font-size:11.5px;color:var(--t3);margin-top:2px}
+#div-body{flex:1;overflow-y:auto;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;-webkit-overflow-scrolling:touch}
+@media(max-width:500px){#div-body{grid-template-columns:1fr;}}
+.div-col{display:flex;flex-direction:column;gap:8px}
+.div-col-head{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r);font-weight:500;font-size:14px;position:sticky;top:0;z-index:1}
+.div-col-head.martin{background:var(--martin);color:var(--martin-t)}
+.div-col-head.anita{background:var(--anita);color:var(--anita-t)}
+.div-col-count{font-size:12px;font-weight:400;opacity:.8;margin-left:auto}
+.div-item{background:var(--wh);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.div-item-name{font-size:13.5px;font-weight:500;color:var(--text);margin-bottom:3px}
+.div-item-room{font-size:11.5px;color:var(--t3)}
+.div-item-notes{font-size:11.5px;color:var(--t2);margin-top:4px;line-height:1.4}
+.div-empty-col{text-align:center;color:var(--t3);font-size:13px;padding:24px;border:1.5px dashed var(--border);border-radius:var(--r)}
+
 /* ── Progress bar ── */
 #progress-bar{display:none;position:fixed;top:0;left:0;right:0;height:3px;background:var(--acc-l);z-index:999}
 #progress-fill{height:100%;background:var(--acc);width:0%;transition:width .3s}
@@ -262,6 +281,7 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
   <div id="mob-tabs">
     <button class="mob-tab active" id="mob-tab-photos" onclick="switchView('photos')">📷 Fotos</button>
     <button class="mob-tab" id="mob-tab-inv" onclick="switchView('inventory')">📦 Inventario</button>
+    <button class="mob-tab" id="mob-tab-div" onclick="switchView('division')">⚖️ División</button>
   </div>
 </div>
 
@@ -277,6 +297,7 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
     <div id="sb-tabs">
       <button class="tab active" id="tab-photos" onclick="switchView('photos')">📷 Fotos</button>
       <button class="tab" id="tab-inv" onclick="switchView('inventory')">📦 Inventario</button>
+      <button class="tab" id="tab-div" onclick="switchView('division')">⚖️ División</button>
     </div>
     <div id="sb-rooms">
       <div id="room-list"></div>
@@ -354,6 +375,21 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
         <button id="add-item-btn" onclick="openItemModal()">+ Agregar</button>
       </div>
       <div id="inv-list"></div>
+    </div>
+
+
+    <!-- DIVISION VIEW -->
+    <div id="division-view">
+      <div id="div-head">
+        <div>
+          <div id="div-title">División</div>
+          <div id="div-meta">Martín y Anita</div>
+        </div>
+      </div>
+      <div id="div-body">
+        <div class="div-col" id="div-col-martin"></div>
+        <div class="div-col" id="div-col-anita"></div>
+      </div>
     </div>
 
   </div><!-- /main -->
@@ -511,19 +547,26 @@ window.mobAction=()=>{
 // ── View switch ──
 window.switchView=function(v){
   currentView=v;
-  document.getElementById("photos-view").style.display    =v==="photos"   ?"flex":"none";
-  document.getElementById("inventory-view").style.display =v==="inventory"?"flex":"none";
-  document.getElementById("sb-rooms").style.display       =v==="photos"   ?"flex":"none";
-  document.getElementById("sb-inv").style.display         =v==="inventory"?"flex":"none";
-  ["tab-photos","tab-inv"].forEach(id=>document.getElementById(id).classList.remove("active"));
-  ["mob-tab-photos","mob-tab-inv"].forEach(id=>document.getElementById(id).classList.remove("active"));
-  document.getElementById(v==="photos"?"tab-photos":"tab-inv").classList.add("active");
-  document.getElementById(v==="photos"?"mob-tab-photos":"mob-tab-inv").classList.add("active");
-  // update mob action button
-  document.getElementById("mob-action-btn").textContent=v==="photos"?"↑ Subir":"+ Agregar";
-  // update mob room name
-  if(v==="inventory") document.getElementById("mob-room-name").textContent="Inventario";
-  else if(currentRoomId){
+  document.getElementById("photos-view").style.display    =v==="photos"    ?"flex":"none";
+  document.getElementById("inventory-view").style.display =v==="inventory" ?"flex":"none";
+  document.getElementById("division-view").style.display  =v==="division"  ?"flex":"none";
+  document.getElementById("sb-rooms").style.display       =v==="photos"    ?"flex":"none";
+  document.getElementById("sb-inv").style.display         =(v==="inventory"||v==="division")?"flex":"none";
+  ["tab-photos","tab-inv","tab-div"].forEach(id=>document.getElementById(id).classList.remove("active"));
+  ["mob-tab-photos","mob-tab-inv","mob-tab-div"].forEach(id=>document.getElementById(id).classList.remove("active"));
+  const tabMap={photos:"tab-photos",inventory:"tab-inv",division:"tab-div"};
+  const mobMap={photos:"mob-tab-photos",inventory:"mob-tab-inv",division:"mob-tab-div"};
+  document.getElementById(tabMap[v]).classList.add("active");
+  document.getElementById(mobMap[v]).classList.add("active");
+  const nameMap={photos:"",inventory:"Inventario",division:"División"};
+  document.getElementById("mob-action-btn").textContent=v==="photos"?"↑ Subir":v==="inventory"?"+ Agregar":"";
+  document.getElementById("mob-action-btn").style.display=v==="division"?"none":"";
+  if(v==="division"){
+    document.getElementById("mob-room-name").textContent="División";
+    renderDivision();
+  } else if(v==="inventory"){
+    document.getElementById("mob-room-name").textContent="Inventario";
+  } else if(currentRoomId){
     const r=rooms.find(x=>x.id===currentRoomId);
     document.getElementById("mob-room-name").textContent=r?.name||"";
   }
@@ -720,6 +763,7 @@ function listenInventory(){
   onSnapshot(query(collection(db,"inventory"),orderBy("createdAt","desc")),snap=>{
     inventoryAll=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderInventory();
+    if(currentView==="division") renderDivision();
   });
 }
 
@@ -758,6 +802,39 @@ function renderInventory(){
       <button class="item-del" onclick="event.stopPropagation();deleteItem('${item.id}')" aria-label="Eliminar">✕</button>
     </div>`;
   }).join("");
+}
+
+
+function renderDivision(){
+  const martinItems=inventoryAll.filter(i=>i.assignedTo==="martin");
+  const anitaItems=inventoryAll.filter(i=>i.assignedTo==="anita");
+  document.getElementById("div-meta").textContent=`${martinItems.length} Martín · ${anitaItems.length} Anita`;
+
+  function renderCol(items){
+    if(!items.length) return '<div class="div-empty-col">Sin elementos asignados</div>';
+    return items.map(item=>{
+      const room=rooms.find(r=>r.id===item.room);
+      return `<div class="div-item">
+        <div class="div-item-name">${esc(item.name)}</div>
+        ${room?`<div class="div-item-room">${esc(room.name)}</div>`:""}
+        ${item.notes?`<div class="div-item-notes">${esc(item.notes)}</div>`:""}
+      </div>`;
+    }).join("");
+  }
+
+  document.getElementById("div-col-martin").innerHTML=`
+    <div class="div-col-head martin">
+      <span>Martín</span>
+      <span class="div-col-count">${martinItems.length} elementos</span>
+    </div>
+    ${renderCol(martinItems)}`;
+
+  document.getElementById("div-col-anita").innerHTML=`
+    <div class="div-col-head anita">
+      <span>Anita</span>
+      <span class="div-col-count">${anitaItems.length} elementos</span>
+    </div>
+    ${renderCol(anitaItems)}`;
 }
 
 window.setPersonFilter=function(p){
