@@ -188,12 +188,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 #div-head{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--wh);flex-shrink:0}
 #div-title{font-family:'Lora',serif;font-size:18px;font-weight:500}
 #div-meta{font-size:11.5px;color:var(--t3);margin-top:2px}
-#div-body{flex:1;overflow-y:auto;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;-webkit-overflow-scrolling:touch}
-@media(max-width:500px){#div-body{grid-template-columns:1fr;}}
+#div-body{flex:1;overflow-y:auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;align-content:start;-webkit-overflow-scrolling:touch}
+@media(max-width:480px){#div-body{grid-template-columns:1fr;}}
 .div-col{display:flex;flex-direction:column;gap:8px}
 .div-col-head{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r);font-weight:500;font-size:14px;position:sticky;top:0;z-index:1}
 .div-col-head.martin{background:var(--martin);color:var(--martin-t)}
 .div-col-head.anita{background:var(--anita);color:var(--anita-t)}
+.div-col-head.venta{background:var(--venta);color:var(--venta-t)}
+.div-col-head.donacion{background:var(--donacion);color:var(--donacion-t)}
+.div-col-head.confirmar{background:var(--confirmar);color:var(--confirmar-t)}
 .div-col-count{font-size:12px;font-weight:400;opacity:.8;margin-left:auto}
 .div-item{background:var(--wh);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
 .div-item-name{font-size:13.5px;font-weight:500;color:var(--text);margin-bottom:3px}
@@ -417,6 +420,9 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
       <div id="div-body">
         <div class="div-col" id="div-col-martin"></div>
         <div class="div-col" id="div-col-anita"></div>
+        <div class="div-col" id="div-col-venta"></div>
+        <div class="div-col" id="div-col-donacion"></div>
+        <div class="div-col" id="div-col-confirmar"></div>
       </div>
     </div>
 
@@ -859,12 +865,18 @@ function renderInventory(){
 
 
 function renderDivision(){
-  const martinItems=inventoryAll.filter(i=>i.assignedTo==="martin");
-  const anitaItems=inventoryAll.filter(i=>i.assignedTo==="anita");
-  document.getElementById("div-meta").textContent=`${martinItems.length} Martín · ${anitaItems.length} Anita`;
+  const cats=[
+    {id:"martin",  label:"Martín",     cls:"martin"},
+    {id:"anita",   label:"Anita",      cls:"anita"},
+    {id:"venta",   label:"Venta",      cls:"venta"},
+    {id:"donacion",label:"Donación",   cls:"donacion"},
+    {id:"confirmar",label:"A confirmar",cls:"confirmar"},
+  ];
+  const counts=cats.map(c=>inventoryAll.filter(i=>i.assignedTo===c.id).length);
+  document.getElementById("div-meta").textContent=cats.map((c,i)=>`${counts[i]} ${c.label}`).join(" · ");
 
   function renderCol(items){
-    if(!items.length) return '<div class="div-empty-col">Sin elementos asignados</div>';
+    if(!items.length) return '<div class="div-empty-col">Sin elementos</div>';
     return items.map(item=>{
       const room=rooms.find(r=>r.id===item.room);
       return `<div class="div-item">
@@ -877,19 +889,15 @@ function renderDivision(){
     }).join("");
   }
 
-  document.getElementById("div-col-martin").innerHTML=`
-    <div class="div-col-head martin">
-      <span>Martín</span>
-      <span class="div-col-count">${martinItems.length} elementos</span>
-    </div>
-    ${renderCol(martinItems)}`;
-
-  document.getElementById("div-col-anita").innerHTML=`
-    <div class="div-col-head anita">
-      <span>Anita</span>
-      <span class="div-col-count">${anitaItems.length} elementos</span>
-    </div>
-    ${renderCol(anitaItems)}`;
+  cats.forEach(c=>{
+    const items=inventoryAll.filter(i=>i.assignedTo===c.id);
+    document.getElementById("div-col-"+c.id).innerHTML=`
+      <div class="div-col-head ${c.cls}">
+        <span>${c.label}</span>
+        <span class="div-col-count">${items.length} elementos</span>
+      </div>
+      ${renderCol(items)}`;
+  });
 }
 
 // ── Photo picker ──
