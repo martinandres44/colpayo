@@ -201,6 +201,34 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .div-item-notes{font-size:11.5px;color:var(--t2);margin-top:4px;line-height:1.4}
 .div-empty-col{text-align:center;color:var(--t3);font-size:13px;padding:24px;border:1.5px dashed var(--border);border-radius:var(--r)}
 
+
+/* ── Photo picker ── */
+#photo-picker{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;align-items:flex-end;justify-content:center}
+#photo-picker.open{display:flex}
+#pp-box{background:var(--wh);border-radius:14px 14px 0 0;width:100%;max-width:600px;max-height:86vh;display:flex;flex-direction:column}
+@media(min-width:641px){#photo-picker{align-items:center}#pp-box{border-radius:14px;max-height:80vh}}
+#pp-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#pp-head h4{font-family:'Lora',serif;font-size:16px;font-weight:500}
+#pp-room-tabs{display:flex;gap:5px;padding:9px 12px;border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch}
+.pp-room-tab{padding:5px 12px;border:1px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer;background:none;font-family:'DM Sans',sans-serif;color:var(--t2);white-space:nowrap;transition:all .12s;flex-shrink:0}
+.pp-room-tab.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+#pp-grid{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:7px;-webkit-overflow-scrolling:touch;align-content:start}
+.pp-photo{position:relative;aspect-ratio:4/3;border-radius:var(--r);overflow:hidden;cursor:pointer;border:2.5px solid transparent;transition:border-color .12s}
+.pp-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.pp-photo.selected{border-color:var(--acc)}
+.pp-check{position:absolute;top:5px;right:5px;width:21px;height:21px;background:var(--acc);border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700}
+.pp-photo.selected .pp-check{display:flex}
+#pp-foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:10px}
+#pp-sel-count{font-size:13px;color:var(--t2)}
+#pp-confirm{padding:8px 20px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:13.5px;font-family:'DM Sans',sans-serif;cursor:pointer}
+.pp-empty{display:flex;align-items:center;justify-content:center;grid-column:1/-1;padding:36px;color:var(--t3);font-size:13px}
+/* Linked photo thumbs in cards */
+.linked-photos{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.lp-thumb{width:52px;height:40px;border-radius:5px;object-fit:cover;cursor:pointer;border:1px solid var(--border);flex-shrink:0}
+.lp-more{width:52px;height:40px;border-radius:5px;background:var(--bg2);display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:var(--t2);border:1px solid var(--border);flex-shrink:0}
+.lp-preview-wrap{position:relative;display:inline-block}
+.lp-remove{position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:#b91c1c;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;cursor:pointer;font-weight:700;line-height:1}
+
 /* ── Progress bar ── */
 #progress-bar{display:none;position:fixed;top:0;left:0;right:0;height:3px;background:var(--acc-l);z-index:999}
 #progress-fill{height:100%;background:var(--acc);width:0%;transition:width .3s}
@@ -395,6 +423,22 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
   </div><!-- /main -->
 </div><!-- /app-body -->
 
+<!-- ══════════ PHOTO PICKER ══════════ -->
+<div id="photo-picker" onclick="closePhotoPicker()">
+  <div id="pp-box" onclick="event.stopPropagation()">
+    <div id="pp-head">
+      <h4>Vincular fotos</h4>
+      <button onclick="closePhotoPicker()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--t2);line-height:1">✕</button>
+    </div>
+    <div id="pp-room-tabs"></div>
+    <div id="pp-grid"></div>
+    <div id="pp-foot">
+      <span id="pp-sel-count">0 fotos seleccionadas</span>
+      <button id="pp-confirm" onclick="confirmPhotoPicker()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════ LIGHTBOX ══════════ -->
 <div id="lightbox" onclick="closeLightbox()">
   <button id="lb-close" onclick="closeLightbox()">✕</button>
@@ -442,6 +486,13 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
     <div class="form-field">
       <label class="form-label">Notas</label>
       <textarea class="form-textarea" id="item-notes" placeholder="Color, marca, condición…" maxlength="300"></textarea>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Fotos vinculadas</label>
+      <div id="linked-preview" class="linked-photos" style="margin-bottom:8px"></div>
+      <button type="button" onclick="openPhotoPicker()" style="padding:7px 14px;border:1.5px dashed var(--border);border-radius:var(--r);background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--t2);cursor:pointer;transition:all .12s" onmouseover="this.style.borderColor='var(--acc)';this.style.color='var(--acc)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--t2)'">
+        + Vincular fotos de la galería
+      </button>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeItemModal()">Cancelar</button>
@@ -526,7 +577,8 @@ async function seedRooms(){
 }
 
 // ── State ──
-let rooms=[],currentRoomId=null,currentPhotos=[],inventoryAll=[];
+let rooms=[],currentRoomId=null,currentPhotos=[],inventoryAll=[],allPhotos=[];
+let ppSelectedPhotos=[],ppTempSelected=[],ppCurrentRoom='all';
 let invPersonFilter="all",invRoomFilter="all";
 let lbIndex=0,unsub=null,editingItemId=null,selectedPerson="",currentView="photos";
 
@@ -798,6 +850,7 @@ function renderInventory(){
           ${sL?`<span class="badge badge-status">${sL}</span>`:""}
         </div>
         ${item.notes?`<div class="item-notes">${esc(item.notes)}</div>`:""}
+        ${item.linkedPhotos?.length?`<div class="linked-photos">${item.linkedPhotos.slice(0,5).map(p=>`<img src="${p.url}" class="lp-thumb" onclick="event.stopPropagation();openLightboxUrl('${p.url}')" alt="">`).join("")}${item.linkedPhotos.length>5?`<span class="lp-more">+${item.linkedPhotos.length-5}</span>`:""}</div>`:""}
       </div>
       <button class="item-del" onclick="event.stopPropagation();deleteItem('${item.id}')" aria-label="Eliminar">✕</button>
     </div>`;
@@ -815,9 +868,11 @@ function renderDivision(){
     return items.map(item=>{
       const room=rooms.find(r=>r.id===item.room);
       return `<div class="div-item">
+        ${item.linkedPhotos?.length?`<img src="${item.linkedPhotos[0].url}" onclick="openLightboxUrl('${item.linkedPhotos[0].url}')" style="width:100%;height:80px;object-fit:cover;border-radius:5px;margin-bottom:8px;cursor:pointer" alt="">`:``}
         <div class="div-item-name">${esc(item.name)}</div>
         ${room?`<div class="div-item-room">${esc(room.name)}</div>`:""}
         ${item.notes?`<div class="div-item-notes">${esc(item.notes)}</div>`:""}
+        ${item.linkedPhotos?.length>1?`<div style="font-size:11px;color:var(--t3);margin-top:4px">+${item.linkedPhotos.length-1} foto${item.linkedPhotos.length>2?"s":""} más</div>`:``}
       </div>`;
     }).join("");
   }
@@ -836,6 +891,108 @@ function renderDivision(){
     </div>
     ${renderCol(anitaItems)}`;
 }
+
+// ── Photo picker ──
+async function loadAllPhotos(){
+  const {collection,query,orderBy,getDocs}=_fb;
+  const snap=await getDocs(query(collection(db,"photos"),orderBy("uploadedAt","asc")));
+  allPhotos=snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+
+window.openPhotoPicker=async function(){
+  ppTempSelected=[...ppSelectedPhotos];
+  document.getElementById("photo-picker").classList.add("open");
+  document.getElementById("pp-grid").innerHTML='<div class="pp-empty">Cargando fotos…</div>';
+  await loadAllPhotos();
+  renderPPRoomTabs();
+  renderPPGrid();
+};
+
+window.closePhotoPicker=function(){
+  document.getElementById("photo-picker").classList.remove("open");
+};
+
+window.confirmPhotoPicker=function(){
+  ppSelectedPhotos=[...ppTempSelected];
+  renderLinkedPreview();
+  closePhotoPicker();
+};
+
+function renderPPRoomTabs(){
+  const tabs=[{id:'all',name:'Todas'},...rooms];
+  document.getElementById("pp-room-tabs").innerHTML=tabs.map(r=>
+    `<button class="pp-room-tab${r.id===ppCurrentRoom?" active":""}" onclick="setPPRoom('${r.id}')">${esc(r.name)}</button>`
+  ).join("");
+}
+
+window.setPPRoom=function(rid){
+  ppCurrentRoom=rid;
+  document.querySelectorAll(".pp-room-tab").forEach(b=>b.classList.remove("active"));
+  event.target.classList.add("active");
+  renderPPGrid();
+};
+
+function renderPPGrid(){
+  const photos=ppCurrentRoom==="all"?allPhotos:allPhotos.filter(p=>p.roomId===ppCurrentRoom);
+  const selIds=new Set(ppTempSelected.map(p=>p.id));
+  if(!photos.length){
+    document.getElementById("pp-grid").innerHTML='<div class="pp-empty">Sin fotos en este ambiente</div>';
+    return;
+  }
+  document.getElementById("pp-grid").innerHTML=photos.map(p=>`
+    <div class="pp-photo${selIds.has(p.id)?" selected":""}" id="ppp-${p.id}" onclick="togglePPPhoto('${p.id}','${esc(p.url)}')">
+      <img src="${esc(p.url)}" alt="" loading="lazy">
+      <div class="pp-check">✓</div>
+    </div>`).join("");
+  updatePPCount();
+}
+
+window.togglePPPhoto=function(id,url){
+  const idx=ppTempSelected.findIndex(p=>p.id===id);
+  if(idx>=0){
+    ppTempSelected.splice(idx,1);
+    document.getElementById("ppp-"+id)?.classList.remove("selected");
+    const chk=document.getElementById("ppp-"+id)?.querySelector(".pp-check");
+    if(chk) chk.style.display="none";
+  }else{
+    ppTempSelected.push({id,url});
+    document.getElementById("ppp-"+id)?.classList.add("selected");
+    const chk=document.getElementById("ppp-"+id)?.querySelector(".pp-check");
+    if(chk) chk.style.display="flex";
+  }
+  updatePPCount();
+};
+
+function updatePPCount(){
+  const n=ppTempSelected.length;
+  document.getElementById("pp-sel-count").textContent=`${n} foto${n===1?"":"s"} seleccionada${n===1?"":"s"}`;
+}
+
+function renderLinkedPreview(){
+  const el=document.getElementById("linked-preview");
+  if(!ppSelectedPhotos.length){el.innerHTML="";return;}
+  el.innerHTML=ppSelectedPhotos.map(p=>`
+    <div class="lp-preview-wrap">
+      <img src="${esc(p.url)}" class="lp-thumb" alt="">
+      <div class="lp-remove" onclick="removePPPhoto('${p.id}')">✕</div>
+    </div>`).join("");
+}
+
+window.removePPPhoto=function(id){
+  ppSelectedPhotos=ppSelectedPhotos.filter(p=>p.id!==id);
+  ppTempSelected=ppTempSelected.filter(p=>p.id!==id);
+  renderLinkedPreview();
+};
+
+window.openLightboxUrl=function(url){
+  document.getElementById("lb-img").src=url;
+  document.getElementById("lb-label").textContent="";
+  document.getElementById("lb-counter").textContent="";
+  document.getElementById("lb-prev").style.opacity="0.2";
+  document.getElementById("lb-next").style.opacity="0.2";
+  document.getElementById("lightbox").classList.add("open");
+};
+
 
 window.setPersonFilter=function(p){
   invPersonFilter=p;
@@ -861,12 +1018,14 @@ window.openItemModal=function(idOrNull){
     document.getElementById("item-status").value=item.status||"en-uso";
     document.getElementById("item-notes").value=item.notes||"";
     selectPerson(item.assignedTo||"ambos");
+    ppSelectedPhotos=item.linkedPhotos||[];ppTempSelected=[...ppSelectedPhotos];renderLinkedPreview();
   }else{
     document.getElementById("item-name").value="";
     document.getElementById("item-room").value="";
     document.getElementById("item-status").value="en-uso";
     document.getElementById("item-notes").value="";
     selectPerson("");
+    ppSelectedPhotos=[];ppTempSelected=[];renderLinkedPreview();
   }
   document.getElementById("item-modal").classList.add("open");
   setTimeout(()=>document.getElementById("item-name").focus(),80);
@@ -889,7 +1048,8 @@ window.saveItem=async function(){
   const data={name,assignedTo:selectedPerson,
     room:document.getElementById("item-room").value,
     status:document.getElementById("item-status").value,
-    notes:document.getElementById("item-notes").value.trim()};
+    notes:document.getElementById("item-notes").value.trim(),
+    linkedPhotos:ppSelectedPhotos};
   const {collection,addDoc,doc,updateDoc,serverTimestamp}=_fb;
   if(editingItemId){
     await updateDoc(doc(db,"inventory",editingItemId),data);
