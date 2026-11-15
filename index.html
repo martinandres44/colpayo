@@ -232,6 +232,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .lp-preview-wrap{position:relative;display:inline-block}
 .lp-remove{position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:#b91c1c;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;cursor:pointer;font-weight:700;line-height:1}
 
+/* ── Search ── */
+#inv-search-wrap{padding:10px 14px 0;flex-shrink:0}
+#inv-search{width:100%;padding:9px 12px;font-size:16px;border:1px solid var(--border);border-radius:var(--r);background:var(--wh);font-family:'DM Sans',sans-serif;color:var(--text);outline:none;-webkit-appearance:none}
+#inv-search:focus{border-color:var(--acc)}
+#lb-search{position:fixed;top:12px;left:12px;right:66px;max-width:420px;z-index:2}
+#lb-search-input{width:100%;padding:9px 12px;font-size:16px;border:1px solid rgba(255,255,255,.25);border-radius:8px;background:rgba(255,255,255,.14);color:#fff;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none}
+#lb-search-input::placeholder{color:rgba(255,255,255,.6)}
+#lb-results{display:none;margin-top:6px;background:var(--wh);border-radius:8px;max-height:45vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.lb-res{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--text)}
+.lb-res:last-child{border-bottom:none}
+.lb-res-name{font-weight:500}
+.lb-res-room{font-size:12px;color:var(--t3)}
+.lb-res-none{padding:14px;font-size:13px;color:var(--t3);text-align:center}
+
 /* ── Progress bar ── */
 #progress-bar{display:none;position:fixed;top:0;left:0;right:0;height:3px;background:var(--acc-l);z-index:999}
 #progress-fill{height:100%;background:var(--acc);width:0%;transition:width .3s}
@@ -246,7 +260,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 #lb-next{right:10px;top:50%;transform:translateY(-50%);padding:12px 14px}
 #lb-prev:hover,#lb-next:hover,#lb-close:hover{background:rgba(255,255,255,.22)}
 #lb-counter{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.6);font-size:12px;background:rgba(0,0,0,.4);padding:4px 14px;border-radius:20px}
-#lb-label{position:fixed;top:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.8);font-family:'Lora',serif;font-size:14px;font-style:italic;white-space:nowrap}
+#lb-label{position:fixed;bottom:48px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.8);font-family:'Lora',serif;font-size:14px;font-style:italic;white-space:nowrap}
 
 /* ── Toast ── */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:#1C1917;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;transition:transform .3s;z-index:2000;white-space:nowrap;max-width:90vw;text-align:center}
@@ -405,6 +419,9 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
         </div>
         <button id="add-item-btn" onclick="openItemModal()">+ Agregar</button>
       </div>
+      <div id="inv-search-wrap">
+        <input id="inv-search" type="search" placeholder="Buscar en el inventario…" oninput="setInvSearch(this.value)" autocomplete="off">
+      </div>
       <div id="inv-list"></div>
     </div>
 
@@ -448,6 +465,10 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
 <!-- ══════════ LIGHTBOX ══════════ -->
 <div id="lightbox" onclick="closeLightbox()">
   <button id="lb-close" onclick="closeLightbox()">✕</button>
+  <div id="lb-search" onclick="event.stopPropagation()">
+    <input id="lb-search-input" type="search" placeholder="Buscar en el inventario…" oninput="lbSearch(this.value)" autocomplete="off">
+    <div id="lb-results"></div>
+  </div>
   <span id="lb-label"></span>
   <img id="lb-img" onclick="event.stopPropagation()" alt="">
   <button id="lb-prev" onclick="event.stopPropagation();lbNav(-1)">‹</button>
@@ -806,10 +827,44 @@ function renderLb(){
   document.getElementById("lb-prev").style.opacity=lbIndex>0?"1":"0.2";
   document.getElementById("lb-next").style.opacity=lbIndex<currentPhotos.length-1?"1":"0.2";
 }
-window.closeLightbox=()=>document.getElementById("lightbox").classList.remove("open");
+window.closeLightbox=()=>{
+  document.getElementById("lightbox").classList.remove("open");
+  document.getElementById("lb-search-input").value="";
+  document.getElementById("lb-results").style.display="none";
+};
+
+// ── Search ──
+const CATS={martin:["badge-martin","Martín"],anita:["badge-anita","Anita"],venta:["badge-venta","Venta"],donacion:["badge-donacion","Donación"],confirmar:["badge-confirmar","A confirmar"]};
+const norm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+function itemMatches(item,q){
+  const room=rooms.find(r=>r.id===item.room);
+  const hay=norm([item.name,item.notes,room?.name,(CATS[item.assignedTo]||[])[1]].join(" "));
+  return q.split(/\s+/).filter(Boolean).every(w=>hay.includes(w));
+}
+let invSearch="";
+window.setInvSearch=function(v){invSearch=v.trim();renderInventory();};
+window.lbSearch=function(v){
+  const q=norm(v.trim());
+  const el=document.getElementById("lb-results");
+  if(!q){el.style.display="none";el.innerHTML="";return;}
+  const res=inventoryAll.filter(i=>itemMatches(i,q)).slice(0,30);
+  el.style.display="block";
+  if(!res.length){el.innerHTML='<div class="lb-res-none">Sin resultados en el inventario</div>';return;}
+  el.innerHTML=res.map(item=>{
+    const room=rooms.find(r=>r.id===item.room);
+    const [c,l]=CATS[item.assignedTo]||["badge-ambos",item.assignedTo||""];
+    return `<div class="lb-res" onclick="lbOpenItem('${item.id}')">
+      <span class="lb-res-name">${esc(item.name)}</span>
+      <span class="badge ${c}">${esc(l)}</span>
+      ${room?`<span class="lb-res-room">${esc(room.name)}</span>`:""}
+    </div>`;
+  }).join("");
+};
+window.lbOpenItem=function(id){window.closeLightbox();window.openItemModal(id);};
 window.lbNav=function(d){const n=lbIndex+d;if(n<0||n>=currentPhotos.length)return;lbIndex=n;renderLb();};
 document.addEventListener("keydown",e=>{
   if(!document.getElementById("lightbox").classList.contains("open")) return;
+  if(e.target.tagName==="INPUT"){if(e.key==="Escape") e.target.blur();return;}
   if(e.key==="ArrowLeft") window.lbNav(-1);
   if(e.key==="ArrowRight") window.lbNav(1);
   if(e.key==="Escape") window.closeLightbox();
@@ -829,6 +884,7 @@ function renderInventory(){
   let items=[...inventoryAll];
   if(invPersonFilter!=="all") items=items.filter(i=>i.assignedTo===invPersonFilter);
   if(invRoomFilter!=="all")   items=items.filter(i=>i.room===invRoomFilter);
+  if(invSearch){const q=norm(invSearch);items=items.filter(i=>itemMatches(i,q));}
   const el=document.getElementById("inv-list");
   const n=items.length;
   document.getElementById("inv-meta").textContent=`${n} ${n===1?"elemento":"elementos"}`;
@@ -838,7 +894,7 @@ function renderInventory(){
       <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" opacity=".35">
         <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
       </svg>
-      <span>Sin elementos — agregá con el botón +</span>
+      <span>${invSearch?"Sin resultados para esa búsqueda":"Sin elementos — agregá con el botón +"}</span>
     </div>`;
     return;
   }
