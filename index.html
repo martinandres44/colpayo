@@ -236,15 +236,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 #inv-search-wrap{padding:10px 14px 0;flex-shrink:0}
 #inv-search{width:100%;padding:9px 12px;font-size:16px;border:1px solid var(--border);border-radius:var(--r);background:var(--wh);font-family:'DM Sans',sans-serif;color:var(--text);outline:none;-webkit-appearance:none}
 #inv-search:focus{border-color:var(--acc)}
-#lb-search{position:fixed;top:12px;left:12px;right:66px;max-width:420px;z-index:2}
-#lb-search-input{width:100%;padding:9px 12px;font-size:16px;border:1px solid rgba(255,255,255,.25);border-radius:8px;background:rgba(255,255,255,.14);color:#fff;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none}
-#lb-search-input::placeholder{color:rgba(255,255,255,.6)}
-#lb-results{display:none;margin-top:6px;background:var(--wh);border-radius:8px;max-height:45vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .lb-res{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--text)}
 .lb-res:last-child{border-bottom:none}
 .lb-res-name{font-weight:500}
 .lb-res-room{font-size:12px;color:var(--t3)}
 .lb-res-none{padding:14px;font-size:13px;color:var(--t3);text-align:center}
+#lb-assign-btn{position:fixed;bottom:12px;right:12px;z-index:2;padding:10px 18px;background:var(--acc);color:#fff;border:none;border-radius:22px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer}
+#lb-assign{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:520px;max-height:72vh;overflow-y:auto;background:var(--wh);border-radius:14px 14px 0 0;padding:14px 16px 22px;z-index:3;-webkit-overflow-scrolling:touch}
+#lb-assign-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+#lb-assign-head b{font-family:'Lora',serif;font-size:16px;font-weight:500}
+#lb-assign-close{background:none;border:none;font-size:18px;color:var(--t2);cursor:pointer;padding:4px 8px}
+#lb-linked{border:1px solid var(--border);border-radius:8px;margin-bottom:12px}
+#lb-linked:empty{display:none}
+#lb-assign-name{width:100%;padding:10px 12px;font-size:16px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);outline:none;-webkit-appearance:none}
+#lb-assign-name:focus{border-color:var(--acc)}
+.lb-assign-label{font-size:11.5px;font-weight:500;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 6px}
+#lb-cats{display:flex;flex-wrap:wrap;gap:8px}
+.lb-cat{flex:1 1 auto;padding:10px 14px;border:none;border-radius:var(--r);font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer}
 
 /* ── Progress bar ── */
 #progress-bar{display:none;position:fixed;top:0;left:0;right:0;height:3px;background:var(--acc-l);z-index:999}
@@ -260,7 +268,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 #lb-next{right:10px;top:50%;transform:translateY(-50%);padding:12px 14px}
 #lb-prev:hover,#lb-next:hover,#lb-close:hover{background:rgba(255,255,255,.22)}
 #lb-counter{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.6);font-size:12px;background:rgba(0,0,0,.4);padding:4px 14px;border-radius:20px}
-#lb-label{position:fixed;bottom:48px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.8);font-family:'Lora',serif;font-size:14px;font-style:italic;white-space:nowrap}
+#lb-label{position:fixed;top:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.8);font-family:'Lora',serif;font-size:14px;font-style:italic;white-space:nowrap}
 
 /* ── Toast ── */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:#1C1917;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;transition:transform .3s;z-index:2000;white-space:nowrap;max-width:90vw;text-align:center}
@@ -465,15 +473,25 @@ textarea.cfg-input{resize:none;height:140px;margin-bottom:0}
 <!-- ══════════ LIGHTBOX ══════════ -->
 <div id="lightbox" onclick="closeLightbox()">
   <button id="lb-close" onclick="closeLightbox()">✕</button>
-  <div id="lb-search" onclick="event.stopPropagation()">
-    <input id="lb-search-input" type="search" placeholder="Buscar en el inventario…" oninput="lbSearch(this.value)" autocomplete="off">
-    <div id="lb-results"></div>
-  </div>
   <span id="lb-label"></span>
   <img id="lb-img" onclick="event.stopPropagation()" alt="">
   <button id="lb-prev" onclick="event.stopPropagation();lbNav(-1)">‹</button>
   <button id="lb-next" onclick="event.stopPropagation();lbNav(1)">›</button>
   <div id="lb-counter"></div>
+  <button id="lb-assign-btn" onclick="event.stopPropagation();toggleLbAssign()">+ Asignar</button>
+  <div id="lb-assign" onclick="event.stopPropagation()">
+    <div id="lb-assign-head"><b>Asignar desde la foto</b><button id="lb-assign-close" onclick="toggleLbAssign(false)">✕</button></div>
+    <div id="lb-linked"></div>
+    <input id="lb-assign-name" type="text" placeholder="¿Qué es? Ej: juego de copas" maxlength="80" autocomplete="off">
+    <div class="lb-assign-label">Asignar a</div>
+    <div id="lb-cats">
+      <button class="lb-cat badge-martin" onclick="lbAssign('martin')">Martín</button>
+      <button class="lb-cat badge-anita" onclick="lbAssign('anita')">Anita</button>
+      <button class="lb-cat badge-venta" onclick="lbAssign('venta')">Venta</button>
+      <button class="lb-cat badge-donacion" onclick="lbAssign('donacion')">Donación</button>
+      <button class="lb-cat badge-confirmar" onclick="lbAssign('confirmar')">A confirmar</button>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════ ITEM MODAL ══════════ -->
@@ -820,6 +838,8 @@ window.openLightbox=function(idx){
 };
 function renderLb(){
   const p=currentPhotos[lbIndex];if(!p) return;
+  if(!lbPhoto||lbPhoto.id!==p.id) document.getElementById("lb-assign-name").value="";
+  lbPhoto=p;renderLbAssign();
   const room=rooms.find(r=>r.id===currentRoomId);
   document.getElementById("lb-img").src=p.url;
   document.getElementById("lb-label").textContent=room?.name||"";
@@ -829,8 +849,8 @@ function renderLb(){
 }
 window.closeLightbox=()=>{
   document.getElementById("lightbox").classList.remove("open");
-  document.getElementById("lb-search-input").value="";
-  document.getElementById("lb-results").style.display="none";
+  toggleLbAssign(false);
+  document.getElementById("lb-assign-name").value="";
 };
 
 // ── Search ──
@@ -843,24 +863,45 @@ function itemMatches(item,q){
 }
 let invSearch="";
 window.setInvSearch=function(v){invSearch=v.trim();renderInventory();};
-window.lbSearch=function(v){
-  const q=norm(v.trim());
-  const el=document.getElementById("lb-results");
-  if(!q){el.style.display="none";el.innerHTML="";return;}
-  const res=inventoryAll.filter(i=>itemMatches(i,q)).slice(0,30);
-  el.style.display="block";
-  if(!res.length){el.innerHTML='<div class="lb-res-none">Sin resultados en el inventario</div>';return;}
-  el.innerHTML=res.map(item=>{
-    const room=rooms.find(r=>r.id===item.room);
+window.lbOpenItem=function(id){window.closeLightbox();window.openItemModal(id);};
+
+// ── Asignar desde la foto ──
+let lbPhoto=null,lbSaving=false;
+window.toggleLbAssign=function(show){
+  const el=document.getElementById("lb-assign");
+  const open=typeof show==="boolean"?show:el.style.display!=="block";
+  el.style.display=open?"block":"none";
+  if(open) renderLbAssign();
+};
+function renderLbAssign(){
+  const btn=document.getElementById("lb-assign-btn");
+  btn.style.display=lbPhoto?"":"none";
+  if(!lbPhoto){document.getElementById("lb-assign").style.display="none";return;}
+  const linked=inventoryAll.filter(i=>(i.linkedPhotos||[]).some(p=>p.id===lbPhoto.id));
+  btn.textContent=linked.length?`+ Asignar (${linked.length})`:"+ Asignar";
+  document.getElementById("lb-linked").innerHTML=linked.map(item=>{
     const [c,l]=CATS[item.assignedTo]||["badge-ambos",item.assignedTo||""];
     return `<div class="lb-res" onclick="lbOpenItem('${item.id}')">
       <span class="lb-res-name">${esc(item.name)}</span>
       <span class="badge ${c}">${esc(l)}</span>
-      ${room?`<span class="lb-res-room">${esc(room.name)}</span>`:""}
     </div>`;
   }).join("");
+}
+window.lbAssign=async function(cat){
+  if(!lbPhoto||lbSaving) return;
+  const input=document.getElementById("lb-assign-name");
+  const name=input.value.trim();
+  if(!name){toast("Escribí qué es antes de asignar");input.focus();return;}
+  lbSaving=true;
+  try{
+    const {collection,addDoc,serverTimestamp}=_fb;
+    await addDoc(collection(db,"inventory"),{name,assignedTo:cat,room:lbPhoto.roomId||"",status:"en-uso",notes:"",
+      linkedPhotos:[{id:lbPhoto.id,url:lbPhoto.url}],createdAt:serverTimestamp()});
+    input.value="";
+    toast(`${name} → ${CATS[cat][1]} ✓`);
+  }catch(e){console.error(e);toast("No se pudo guardar");}
+  lbSaving=false;
 };
-window.lbOpenItem=function(id){window.closeLightbox();window.openItemModal(id);};
 window.lbNav=function(d){const n=lbIndex+d;if(n<0||n>=currentPhotos.length)return;lbIndex=n;renderLb();};
 document.addEventListener("keydown",e=>{
   if(!document.getElementById("lightbox").classList.contains("open")) return;
@@ -877,6 +918,7 @@ function listenInventory(){
     inventoryAll=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderInventory();
     if(currentView==="division") renderDivision();
+    if(document.getElementById("lightbox").classList.contains("open")) renderLbAssign();
   });
 }
 
@@ -1049,6 +1091,7 @@ window.removePPPhoto=function(id){
 };
 
 window.openLightboxUrl=function(url){
+  lbPhoto=null;renderLbAssign();
   document.getElementById("lb-img").src=url;
   document.getElementById("lb-label").textContent="";
   document.getElementById("lb-counter").textContent="";
